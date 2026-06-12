@@ -1,0 +1,16 @@
+package cl.videojuego.inventario_service.dto;
+
+import lombok.Data;
+
+@Data
+public class ArmaDTO {
+
+    private Long idArma;
+    private String nombreArma;
+    private Integer danio;
+    private Integer nivelMinimo;
+    private Integer precio;
+    private String nombreTipo;
+    private String nombreRareza;
+    private Double multiplicadorDanio;
+}

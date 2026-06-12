@@ -1,0 +1,272 @@
+version: "3.9"
+
+# =============================================================
+#  Red interna — todos los servicios se comunican por nombre
+# =============================================================
+networks:
+  videojuegos-net:
+    driver: bridge
+
+# =============================================================
+#  Volúmenes persistentes
+# =============================================================
+volumes:
+  mysql-data:
+
+# =============================================================
+#  SERVICIOS
+# =============================================================
+services:
+
+  # ─── 1. MySQL ─────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: videojuego
+      MYSQL_PASSWORD: videojuego
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./Script/crear_bases_datos.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "3306:3306"
+    networks:
+      - videojuegos-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ─── 2. Config Server ─────────────────────────────────────
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: config-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    volumes:
+      # Monta el directorio de configuración en la ruta absoluta que usa el server
+      - ./config-server/config-microservicios:/config-microservicios:ro
+    ports:
+      - "8888:8888"
+    networks:
+      - videojuegos-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8888/actuator/health | grep -q '\"status\":\"UP\"' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  # ─── 3. Eureka Server ─────────────────────────────────────
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: eureka-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8761:8761"
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health | grep -q '\"status\":\"UP\"' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # ─── 4. API Gateway ───────────────────────────────────────
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  # ─── 5. Microservicios de dominio ─────────────────────────
+  usuario-service:
+    build:
+      context: ./usuario-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: usuario-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=usuario_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  personaje-service:
+    build:
+      context: ./personaje-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: personaje-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=personaje_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  arma-service:
+    build:
+      context: ./arma-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: arma-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=arma_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  tienda-service:
+    build:
+      context: ./tienda-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: tienda-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=tienda_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  pago-service:
+    build:
+      context: ./pago-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: pago-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=pago_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  inventario-service:
+    build:
+      context: ./inventario-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: inventario-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=inventario_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  mision-service:
+    build:
+      context: ./mision-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: mision-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=mision_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  ranking-service:
+    build:
+      context: ./ranking-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: ranking-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=ranking_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  combate-service:
+    build:
+      context: ./combate-service
+      dockerfile: ../dependecy-docker/Dockerfile
+    container_name: combate-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_NAME=combate_db
+    networks:
+      - videojuegos-net
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy

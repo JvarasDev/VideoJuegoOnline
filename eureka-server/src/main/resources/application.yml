@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: eureka-server
+  config:
+    # optional: evita que Eureka no arranque si config-server no está disponible al inicio
+    import: "optional:configserver:http://localhost:8888"
+  # ✅ Necesario para el dashboard Eureka cuando se ejecuta desde un JAR empaquetado
+  freemarker:
+    prefer-file-system-access: false
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: false
+    # ✅ Intervalos agresivos para contenedores (defecto: 30s/90s — demasiado lentos)
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+  client:
+    register-with-eureka: false   # Este nodo no se registra a sí mismo
+    fetch-registry: false         # No necesita caché de otros servicios
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    wait-time-in-ms-when-sync-empty: 0
+    # ⚠️ DECISIÓN CONSCIENTE: false = desarrollo (detecta caídas rápido)
+    # En producción cambiar a true (protege contra falsos positivos en particiones de red)
+    enable-self-preservation: false
+    renewal-percent-threshold: 0.85
+    eviction-interval-timer-in-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    com.netflix.eureka: WARN
+    com.netflix.discovery: WARN
+    cl.videojuego: DEBUG
+
+---
+# ✅ Perfil docker: sobreescribe hostname y URL del config-server con nombres de servicio Docker
+spring:
+  config:
+    activate:
+      on-profile: docker
+    import: "optional:configserver:http://config-server:8888"
+
+eureka:
+  instance:
+    hostname: eureka-server   # Nombre del servicio en docker-compose, no localhost
+  client:
+    service-url:
+      defaultZone: http://eureka-server:${server.port}/eureka/

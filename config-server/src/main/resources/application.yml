@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          # Ruta absoluta dentro del contenedor (montada via volumen en Docker).
+          # En local funciona si se ejecuta desde la raíz del proyecto con: java -jar
+          search-locations: file:/config-microservicios/
+
+server:
+  port: 8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.config: DEBUG
+
+---
+# Perfil docker: la ruta de configuración se monta via volumen en el contenedor
+spring:
+  config:
+    activate:
+      on-profile: docker
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:/config-microservicios/

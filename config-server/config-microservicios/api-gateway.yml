@@ -1,0 +1,139 @@
+# ─────────────────────────────────────────────────────────────
+#  Mapa de puertos del sistema
+#  ────────────────────────────────────────────────────
+#  Infraestructura
+#    config-server   : 8888
+#    eureka-server   : 8761
+#    api-gateway     : 8080
+#  ────────────────────────────────────────────────────
+#  Microservicios de dominio
+#    usuario-service   : 8081
+#    personaje-service : 8082
+#    arma-service      : 8083
+#    tienda-service    : 8084
+#    pago-service      : 8085
+#    inventario-service: 8086
+#    mision-service    : 8087
+#    ranking-service   : 8088
+#    combate-service   : 8089
+# ─────────────────────────────────────────────────────────────
+
+server:
+  port: 8080
+
+spring:
+  main:
+    # ✅ Declarar explícitamente modo reactivo (requerido por Spring Cloud Gateway WebFlux)
+    web-application-type: reactive
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          # ✅ Timeouts globales — evitan thread pool exhaustion ante servicios lentos
+          httpclient:
+            connect-timeout: 3000      # 3 segundos para establecer conexión
+            response-timeout: 10s      # 10 segundos para recibir respuesta
+
+          # ✅ CORS global explícito — ajustar allowed-origins según el frontend
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:3000"
+                  - "http://localhost:5173"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - PATCH
+                  - OPTIONS
+                allowedHeaders: "*"
+                allowCredentials: true
+                maxAge: 3600
+
+          routes:
+            # ✅ lb:// delega en Eureka la resolución de instancias (load balancing real)
+            - id: usuario-service
+              uri: lb://USUARIO-SERVICE
+              predicates:
+                - Path=/usuario-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: personaje-service
+              uri: lb://PERSONAJE-SERVICE
+              predicates:
+                - Path=/personaje-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: arma-service
+              uri: lb://ARMA-SERVICE
+              predicates:
+                - Path=/arma-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: tienda-service
+              uri: lb://TIENDA-SERVICE
+              predicates:
+                - Path=/tienda-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: pago-service
+              uri: lb://PAGO-SERVICE
+              predicates:
+                - Path=/pago-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: inventario-service
+              uri: lb://INVENTARIO-SERVICE
+              predicates:
+                - Path=/inventario-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: mision-service
+              uri: lb://MISION-SERVICE
+              predicates:
+                - Path=/mision-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: ranking-service
+              uri: lb://RANKING-SERVICE
+              predicates:
+                - Path=/ranking-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: combate-service
+              uri: lb://COMBATE-SERVICE
+              predicates:
+                - Path=/combate-service/**
+              filters:
+                - StripPrefix=1
+
+eureka:
+  client:
+    service-url:
+      # En local: localhost | En Docker: sobreescrito por perfil en application.yml
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # ✅ Solo endpoints necesarios — NO "*" (evita exponer /shutdown, /env sin seguridad)
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
