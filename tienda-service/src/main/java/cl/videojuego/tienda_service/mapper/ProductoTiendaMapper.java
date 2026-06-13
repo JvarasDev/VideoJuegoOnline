@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ProductoTiendaMapper {
 
+        @Mapping(target = "precio", source = "producto.precio")
         @Mapping(target = "idReferenciaItem", source = "producto.idReferenciaItem")
         @Mapping(target = "nombreItem", source = "arma.nombreArma") // Temporalmente sigue trayendo de arma
         @Mapping(target = "nombreTipoItem", source = "producto.tipoItem.nombreTipo")
@@ -21,6 +22,7 @@ public interface ProductoTiendaMapper {
         ProductoTiendaDTO toDTO(ProductoTienda producto, ArmaDTO arma);
 
         @Mapping(target = "idProducto", ignore = true)
+        @Mapping(target = "descripcion", source = "dto.descripcion")
         @Mapping(target = "tipoItem", source = "tipo")
         @Mapping(target = "categoriaProducto", source = "categoria")
         @Mapping(target = "estadoProducto", source = "estado")
