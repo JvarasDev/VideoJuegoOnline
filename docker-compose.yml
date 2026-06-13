@@ -43,7 +43,7 @@ services:
   config-server:
     build:
       context: ./config-server
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: config-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -65,7 +65,7 @@ services:
   eureka-server:
     build:
       context: ./eureka-server
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: eureka-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -87,7 +87,7 @@ services:
   api-gateway:
     build:
       context: ./api-gateway
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -111,7 +111,7 @@ services:
   usuario-service:
     build:
       context: ./usuario-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: usuario-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -129,7 +129,7 @@ services:
   personaje-service:
     build:
       context: ./personaje-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: personaje-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -147,7 +147,7 @@ services:
   arma-service:
     build:
       context: ./arma-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: arma-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -165,7 +165,7 @@ services:
   tienda-service:
     build:
       context: ./tienda-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: tienda-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -183,7 +183,7 @@ services:
   pago-service:
     build:
       context: ./pago-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: pago-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -201,7 +201,7 @@ services:
   inventario-service:
     build:
       context: ./inventario-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: inventario-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -219,7 +219,7 @@ services:
   mision-service:
     build:
       context: ./mision-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: mision-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -237,7 +237,7 @@ services:
   ranking-service:
     build:
       context: ./ranking-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: ranking-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
@@ -255,7 +255,7 @@ services:
   combate-service:
     build:
       context: ./combate-service
-      dockerfile: ../dependecy-docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: combate-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
