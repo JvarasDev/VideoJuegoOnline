@@ -1,4 +1,4 @@
 package cl.videojuego.pago_service.exception;
 
-public class PagoDuplicadoException {
+public class PagoDuplicadoException extends RuntimeException{
 }
