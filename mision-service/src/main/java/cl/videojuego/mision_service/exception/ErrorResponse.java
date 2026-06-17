@@ -1,4 +1,4 @@
-﻿package cl.videojuego.mision_service.exception;
+package cl.videojuego.mision_service.exception;
 
 import java.time.LocalDateTime;
 

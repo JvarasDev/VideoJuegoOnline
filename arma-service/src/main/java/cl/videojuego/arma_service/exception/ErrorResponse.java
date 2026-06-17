@@ -1,4 +1,4 @@
-﻿package cl.videojuego.arma_service.exception;
+package cl.videojuego.arma_service.exception;
 
 import java.time.LocalDateTime;
 

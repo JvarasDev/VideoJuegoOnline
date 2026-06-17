@@ -1,4 +1,4 @@
-﻿package cl.videojuego.ranking_service.exception;
+package cl.videojuego.ranking_service.exception;
 
 import java.time.LocalDateTime;
 

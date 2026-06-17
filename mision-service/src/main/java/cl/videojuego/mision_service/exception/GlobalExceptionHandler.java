@@ -1,4 +1,4 @@
-﻿package cl.videojuego.mision_service.exception;
+package cl.videojuego.mision_service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

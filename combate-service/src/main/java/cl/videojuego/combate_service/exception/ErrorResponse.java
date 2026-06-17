@@ -1,4 +1,4 @@
-﻿package cl.videojuego.combate_service.exception;
+package cl.videojuego.combate_service.exception;
 
 import java.time.LocalDateTime;
 

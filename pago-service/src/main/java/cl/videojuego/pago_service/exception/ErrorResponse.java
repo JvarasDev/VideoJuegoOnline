@@ -1,4 +1,4 @@
-﻿package cl.videojuego.pago_service.exception;
+package cl.videojuego.pago_service.exception;
 
 import java.time.LocalDateTime;
 

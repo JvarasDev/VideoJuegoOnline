@@ -1,4 +1,4 @@
-﻿package cl.videojuego.inventario_service.exception;
+package cl.videojuego.inventario_service.exception;
 
 import java.time.LocalDateTime;
 

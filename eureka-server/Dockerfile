@@ -16,11 +16,11 @@ COPY mvnw pom.xml ./
 RUN chmod +x mvnw
 
 # Pre-descargar dependencias (cacheadas en capas separadas)
-RUN --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -B
+RUN --mount=type=cache,target=/root/.m2/repository ./mvnw dependency:go-offline -B
 
 # Copiar código fuente y construir el JAR ejecutable
 COPY src ./src
-RUN --mount=type=cache,target=/root/.m2 ./mvnw package -DskipTests -B
+RUN --mount=type=cache,target=/root/.m2/repository ./mvnw package -DskipTests -B
 
 # =============================================================
 # STAGE 2 — RUNTIME
@@ -36,7 +36,7 @@ LABEL description="Eureka Server - Plataforma de Videojuegos Online"
 WORKDIR /app
 
 # Usuario no-root por seguridad (buena práctica Docker)
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && apk add --no-cache wget
 
 # Copiar solo el JAR desde el stage de build
 COPY --from=builder /app/target/*.jar app.jar

@@ -16,11 +16,11 @@ COPY mvnw pom.xml ./
 RUN chmod +x mvnw
 
 # Pre-descargar dependencias (cacheadas en capas separadas)
-RUN --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -B
+RUN --mount=type=cache,target=/root/.m2/repository ./mvnw dependency:go-offline -B
 
 # Copiar código fuente y construir el JAR ejecutable
 COPY src ./src
-RUN --mount=type=cache,target=/root/.m2 ./mvnw package -DskipTests -B
+RUN --mount=type=cache,target=/root/.m2/repository ./mvnw package -DskipTests -B
 
 # =============================================================
 # STAGE 2 — RUNTIME
