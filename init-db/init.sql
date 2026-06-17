@@ -1,9 +1,20 @@
-CREATE DATABASE IF NOT EXISTS bd_usuarios
-CREATE DATABASE IF NOT EXISTS tienda_db
-CREATE DATABASE IF NOT EXISTS ranking_db
-CREATE DATABASE IF NOT EXISTS personaje_db
-CREATE DATABASE IF NOT EXISTS pago_db
-CREATE DATABASE IF NOT EXISTS mision_db
-CREATE DATABASE IF NOT EXISTS inventario_db
-CREATE DATABASE IF NOT EXISTS combate_db
+CREATE DATABASE IF NOT EXISTS usuario_db;
+CREATE DATABASE IF NOT EXISTS personaje_db;
+CREATE DATABASE IF NOT EXISTS arma_db;
+CREATE DATABASE IF NOT EXISTS tienda_db;
+CREATE DATABASE IF NOT EXISTS pago_db;
+CREATE DATABASE IF NOT EXISTS inventario_db;
+CREATE DATABASE IF NOT EXISTS mision_db;
+CREATE DATABASE IF NOT EXISTS ranking_db;
+CREATE DATABASE IF NOT EXISTS combate_db;
 
+GRANT ALL PRIVILEGES ON usuario_db.* TO 'videojuego'@'%';
+GRANT ALL PRIVILEGES ON personaje_db.* TO 'videojuego'@'%';
+GRANT ALL PRIVILEGES ON arma_db.* TO 'videojuego'@'%';
+GRANT ALL PRIVILEGES ON tienda_db.* TO 'videojuego'@'%';
+GRANT ALL PRIVILEGES ON pago_db.* TO 'videojuego'@'%';
+GRANT ALL PRIVILEGES ON inventario_db.* TO 'videojuego'@'%';
+GRANT ALL PRIVILEGES ON mision_db.* TO 'videojuego'@'%';
+GRANT ALL PRIVILEGES ON ranking_db.* TO 'videojuego'@'%';
+GRANT ALL PRIVILEGES ON combate_db.* TO 'videojuego'@'%';
+FLUSH PRIVILEGES;
