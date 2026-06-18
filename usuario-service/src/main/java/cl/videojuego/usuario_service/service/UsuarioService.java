@@ -92,6 +92,15 @@ public class UsuarioService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<UsuarioDTO> listarPorFechaVerificandoResultados(LocalDate fecha) {
+        List<UsuarioDTO> usuarios = listarPorFecha(fecha);
+        if (usuarios.isEmpty()) {
+            throw new RecursoNoEncontradoException("No hay usuarios registrados en la fecha: " + fecha);
+        }
+        return usuarios;
+    }
+
     // ─── Escritura ────────────────────────────────────────────────────────────
 
     @Transactional

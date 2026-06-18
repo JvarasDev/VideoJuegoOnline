@@ -14,6 +14,8 @@ import cl.videojuego.combate_service.repository.TipoCombateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import cl.videojuego.combate_service.exception.ResultadoCombateInvalidoException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +45,7 @@ public class CombateService {
 
         if (!dto.getIdGanador().equals(dto.getIdPersonajeAtacante())
                 && !dto.getIdGanador().equals(dto.getIdPersonajeDefensor())) {
-            throw new RuntimeException("El ganador debe ser el atacante o el defensor");
+            throw new ResultadoCombateInvalidoException("El ganador debe ser el atacante o el defensor");
         }
 
         TipoCombate tipo = tipoCombateRepository.findById(dto.getIdTipoCombate())

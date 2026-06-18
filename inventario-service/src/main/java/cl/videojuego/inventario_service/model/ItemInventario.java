@@ -33,4 +33,8 @@ public class ItemInventario {
     private LocalDate fechaObtencion;
 
     private Boolean equipado;
+
+    // NUEVO CAMPO: Guardamos el nombre real del ítem para no hacer llamadas Feign en cada lectura
+    @Column(nullable = false)
+    private String nombreItem;
 }

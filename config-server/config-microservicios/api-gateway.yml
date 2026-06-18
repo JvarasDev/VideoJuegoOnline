@@ -137,3 +137,13 @@ management:
       show-details: always
     gateway:
       enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    cl.videojuego.api_gateway: INFO
+    org.springframework.cloud.gateway: INFO
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

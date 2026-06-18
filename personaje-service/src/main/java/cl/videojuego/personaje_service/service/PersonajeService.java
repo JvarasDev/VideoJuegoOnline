@@ -14,6 +14,8 @@ import cl.videojuego.personaje_service.repository.PersonajeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import cl.videojuego.personaje_service.exception.UsuarioNoAptoException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,15 +41,15 @@ public class PersonajeService {
         UsuarioDTO usuario = usuarioClient.buscarUsuarioPorId(dto.getIdUsuario());
 
         if (usuario.getNombreEstado().equalsIgnoreCase("BANEADO")) {
-            throw new RuntimeException("No se puede crear personaje porque el usuario está baneado");
+            throw new UsuarioNoAptoException("No se puede crear personaje porque el usuario está baneado");
         }
 
         if (usuario.getNombreEstado().equalsIgnoreCase("SUSPENDIDO")) {
-            throw new RuntimeException("No se puede crear personaje porque el usuario está suspendido");
+            throw new UsuarioNoAptoException("No se puede crear personaje porque el usuario está suspendido");
         }
 
         if (usuario.getNombreRol().equalsIgnoreCase("ADMIN")) {
-            throw new RuntimeException("No se puede crear personaje porque los administradores no juegan como personajes");
+            throw new UsuarioNoAptoException("No se puede crear personaje porque los administradores no juegan como personajes");
         }
 
         ClasePersonaje clase = clasePersonajeRepository.findById(dto.getIdClasePersonaje())

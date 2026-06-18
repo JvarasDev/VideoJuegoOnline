@@ -11,7 +11,51 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    // error 500
+
+    /**
+     * Captura todas las excepciones que extienden ApiException (PagoNotFoundException,
+     * PagoInsuficienteException, MetodoPagoNotFoundException, EstadoPagoNotFoundException,
+     * StockInsuficienteException). El status HTTP está embebido en la propia excepción.
+     */
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
+        ErrorResponse error = new ErrorResponse(
+                ex.getStatus().value(),
+                ex.getStatus().getReasonPhrase(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, ex.getStatus());
+    }
+
+    /**
+     * PagoDuplicadoException no extiende ApiException — se captura por separado.
+     * Deuda técnica: status 401 en PagoInsuficienteException pendiente de revisión.
+     */
+    @ExceptionHandler(PagoDuplicadoException.class)
+    public ResponseEntity<ErrorResponse> handlePagoDuplicado(PagoDuplicadoException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String errors = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation Error",
+                errors
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         ErrorResponse error = new ErrorResponse(
@@ -21,34 +65,5 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    //error code 400
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errors = ex.getBindingResult().getFieldErrors()
-                .stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining(", "));
-                
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Validation Error",
-                errors
-        );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
-        // Asumimos 404 para custom RuntimeExceptions como 'RecursoNoEncontradoException' que ya tenian
-        HttpStatus status = HttpStatus.NOT_FOUND;
-        if(ex.getMessage() != null && (ex.getMessage().toLowerCase().contains("negativo") || ex.getMessage().toLowerCase().contains("inválido"))) {
-             status = HttpStatus.BAD_REQUEST;
-        }
-        ErrorResponse error = new ErrorResponse(
-                status.value(),
-                status.getReasonPhrase(),
-                ex.getMessage()
-        );
-        return new ResponseEntity<>(error, status);
-    }
 }
+
