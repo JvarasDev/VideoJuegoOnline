@@ -8,6 +8,8 @@ import cl.videojuego.usuario_service.model.Rol;
 import cl.videojuego.usuario_service.service.EstadoUsuarioService;
 import cl.videojuego.usuario_service.service.RolService;
 import cl.videojuego.usuario_service.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,8 @@ public class UsuarioController {
     private final EstadoUsuarioService estadoUsuarioService;
 
     // ─── Usuarios ─────────────────────────────────────────────────────────────
-
+    @Operation(summary = "Listar todos los pagos", description = "Retorna una lista con todos los pagos registrados")
+    @ApiResponse(responseCode = "200", description = "")
     @GetMapping
     public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarUsuarios() {
         return ResponseEntity.ok(ApiResponse.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente"));
