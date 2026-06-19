@@ -27,7 +27,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="config-server" options="-parameters" />
-      <module name="eureka-server" options="" />
+      <module name="eureka-server" options="-parameters" />
       <module name="personaje-service" options="-parameters" />
       <module name="usuario-service" options="-parameters" />
     </option>
