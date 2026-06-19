@@ -48,7 +48,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=native,docker
     volumes:
-      # Monta el directorio de configuración en la ruta absoluta que usa el server
+      # Monta los YAML del config-server como volumen para permitir override en runtime.
+      # El classpath (dentro del JAR) es la fuente primaria; este volumen sobreescribe si existe.
       - ./config-server/config-microservicios:/config-microservicios:ro
     ports:
       - "8888:8888"
@@ -69,8 +70,12 @@ services:
     container_name: eureka-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+<<<<<<< HEAD
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - CONFIG_SEARCH_LOCATIONS = file:/config-microservicios/
+=======
+      - CONFIG_SERVER_URL=http://config-server:8888
+>>>>>>> 668bfee1df97e6aa611a3ff800aa75213a129bae
     ports:
       - "8761:8761"
     networks:
@@ -93,7 +98,7 @@ services:
     container_name: api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
     ports:
       - "8080:8080"
     networks:
@@ -118,7 +123,7 @@ services:
     container_name: usuario-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=usuario_db
     networks:
       - videojuegos-net
@@ -137,7 +142,7 @@ services:
     container_name: personaje-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=personaje_db
     networks:
       - videojuegos-net
@@ -156,7 +161,7 @@ services:
     container_name: arma-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=arma_db
     networks:
       - videojuegos-net
@@ -175,7 +180,7 @@ services:
     container_name: tienda-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=tienda_db
     networks:
       - videojuegos-net
@@ -194,7 +199,7 @@ services:
     container_name: pago-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=pago_db
     networks:
       - videojuegos-net
@@ -213,7 +218,7 @@ services:
     container_name: inventario-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=inventario_db
     networks:
       - videojuegos-net
@@ -232,7 +237,7 @@ services:
     container_name: mision-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=mision_db
     networks:
       - videojuegos-net
@@ -251,7 +256,7 @@ services:
     container_name: ranking-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=ranking_db
     networks:
       - videojuegos-net
@@ -270,7 +275,7 @@ services:
     container_name: combate-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=combate_db
     networks:
       - videojuegos-net

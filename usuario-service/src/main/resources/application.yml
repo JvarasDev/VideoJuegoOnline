@@ -3,7 +3,11 @@ spring:
     name: usuario-service
 
   config:
+<<<<<<< HEAD
       import: ${CONFIG_SERVER_URL:configserver:http://localhost:8888}
+=======
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888}
+>>>>>>> 668bfee1df97e6aa611a3ff800aa75213a129bae
 
   datasource:
     url: jdbc:mysql://localhost:3306/usuario_db

@@ -3,7 +3,10 @@ package cl.videojuego.pago_service.exception;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+import lombok.EqualsAndHashCode;
+
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ApiException extends RuntimeException {
     private final HttpStatus status;
     private final String errorCode;

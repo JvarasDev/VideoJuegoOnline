@@ -1,0 +1,207 @@
+# ─────────────────────────────────────────────────────────────
+#  Mapa de puertos del sistema
+#  ────────────────────────────────────────────────────
+#  Infraestructura
+#    config-server   : 8888
+#    eureka-server   : 8761
+#    api-gateway     : 8080
+#  ────────────────────────────────────────────────────
+#  Microservicios de dominio
+#    usuario-service   : 8081
+#    personaje-service : 8082
+#    arma-service      : 8083
+#    tienda-service    : 8084
+#    pago-service      : 8085
+#    inventario-service: 8086
+#    mision-service    : 8087
+#    ranking-service   : 8088
+#    combate-service   : 8089
+# ─────────────────────────────────────────────────────────────
+
+server:
+  port: 8080
+
+spring:
+  main:
+    # ✅ Declarar explícitamente modo reactivo (requerido por Spring Cloud Gateway WebFlux)
+    web-application-type: reactive
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          # ✅ Timeouts globales — evitan thread pool exhaustion ante servicios lentos
+          httpclient:
+            connect-timeout: 3000      # 3 segundos para establecer conexión
+            response-timeout: 10s      # 10 segundos para recibir respuesta
+
+          # ✅ CORS global explícito — ajustar allowed-origins según el frontend
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:3000"
+                  - "http://localhost:5173"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - PATCH
+                  - OPTIONS
+                allowedHeaders: "*"
+                allowCredentials: true
+                maxAge: 3600
+
+          routes:
+            # ════════════════════════════════════════════════════════════
+            # PATRÓN DE RUTAS:
+            #   /nombre-servicio/**  → StripPrefix=1 → controller recibe /api/recurso/**
+            #   /api/recurso/**      → sin strip       → controller recibe /api/recurso/**
+            #
+            # Ambos patrones son válidos. Usar el que sea más conveniente.
+            # Ejemplo: GET http://localhost:8080/pago-service/api/pagos   ✅
+            #          GET http://localhost:8080/api/pagos                 ✅
+            # ════════════════════════════════════════════════════════════
+
+            # ── usuario-service ──────────────────────────────────────────
+            - id: usuario-service-api
+              uri: lb://USUARIO-SERVICE
+              predicates:
+                - Path=/api/usuarios/**
+            - id: usuario-service
+              uri: lb://USUARIO-SERVICE
+              predicates:
+                - Path=/usuario-service/**
+              filters:
+                - StripPrefix=1
+
+            # ── personaje-service ─────────────────────────────────────────
+            - id: personaje-service-api
+              uri: lb://PERSONAJE-SERVICE
+              predicates:
+                - Path=/api/personajes/**
+            - id: personaje-service
+              uri: lb://PERSONAJE-SERVICE
+              predicates:
+                - Path=/personaje-service/**
+              filters:
+                - StripPrefix=1
+
+            # ── arma-service ──────────────────────────────────────────────
+            - id: arma-service-api
+              uri: lb://ARMA-SERVICE
+              predicates:
+                - Path=/api/armas/**
+            - id: arma-service
+              uri: lb://ARMA-SERVICE
+              predicates:
+                - Path=/arma-service/**
+              filters:
+                - StripPrefix=1
+
+            # ── tienda-service ────────────────────────────────────────────
+            - id: tienda-service-api
+              uri: lb://TIENDA-SERVICE
+              predicates:
+                - Path=/api/productos/**
+            - id: tienda-service
+              uri: lb://TIENDA-SERVICE
+              predicates:
+                - Path=/tienda-service/**
+              filters:
+                - StripPrefix=1
+
+            # ── pago-service ──────────────────────────────────────────────
+            - id: pago-service-api
+              uri: lb://PAGO-SERVICE
+              predicates:
+                - Path=/api/pagos/**
+            - id: pago-service
+              uri: lb://PAGO-SERVICE
+              predicates:
+                - Path=/pago-service/**
+              filters:
+                - StripPrefix=1
+
+            # ── inventario-service ────────────────────────────────────────
+            - id: inventario-service-api-inventarios
+              uri: lb://INVENTARIO-SERVICE
+              predicates:
+                - Path=/api/inventarios/**
+            - id: inventario-service-api-items
+              uri: lb://INVENTARIO-SERVICE
+              predicates:
+                - Path=/api/items-inventario/**
+            - id: inventario-service
+              uri: lb://INVENTARIO-SERVICE
+              predicates:
+                - Path=/inventario-service/**
+              filters:
+                - StripPrefix=1
+
+            # ── mision-service ────────────────────────────────────────────
+            - id: mision-service-api
+              uri: lb://MISION-SERVICE
+              predicates:
+                - Path=/api/misiones/**
+            - id: mision-service
+              uri: lb://MISION-SERVICE
+              predicates:
+                - Path=/mision-service/**
+              filters:
+                - StripPrefix=1
+
+            # ── ranking-service ───────────────────────────────────────────
+            - id: ranking-service-api
+              uri: lb://RANKING-SERVICE
+              predicates:
+                - Path=/api/rankings/**
+            - id: ranking-service
+              uri: lb://RANKING-SERVICE
+              predicates:
+                - Path=/ranking-service/**
+              filters:
+                - StripPrefix=1
+
+            # ── combate-service ───────────────────────────────────────────
+            - id: combate-service-api
+              uri: lb://COMBATE-SERVICE
+              predicates:
+                - Path=/api/combates/**
+            - id: combate-service
+              uri: lb://COMBATE-SERVICE
+              predicates:
+                - Path=/combate-service/**
+              filters:
+                - StripPrefix=1
+
+eureka:
+  client:
+    service-url:
+      # En local: localhost | En Docker: sobreescrito por perfil en application.yml
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # ✅ Solo endpoints necesarios — NO "*" (evita exponer /shutdown, /env sin seguridad)
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    cl.videojuego.api_gateway: INFO
+    org.springframework.cloud.gateway: INFO
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

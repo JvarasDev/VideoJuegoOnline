@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 // @Service indica que esta clase contiene la lógica de negocio
 @Service
+@SuppressWarnings("null")
 @RequiredArgsConstructor
 public class MisionService {
 

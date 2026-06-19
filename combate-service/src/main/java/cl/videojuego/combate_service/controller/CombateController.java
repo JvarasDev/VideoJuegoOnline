@@ -18,7 +18,6 @@ public class CombateController {
 
     private final CombateService combateService;
 
-
     @GetMapping
     public ResponseEntity<List<CombateDTO>> listarTodos() {
         return ResponseEntity.ok(combateService.listarTodos());
@@ -26,8 +25,7 @@ public class CombateController {
 
     @PostMapping
     public ResponseEntity<CombateDTO> registrar(
-            @Valid @RequestBody CombateRegistroDTO dto
-    ) {
+            @Valid @RequestBody CombateRegistroDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(combateService.registrar(dto));
     }
 

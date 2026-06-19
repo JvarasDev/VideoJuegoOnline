@@ -2,7 +2,7 @@ spring:
   application:
     name: api-gateway
   config:
-    import: optional:configserver:http://localhost:8888
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888}
 
 ---
 # ✅ Perfil docker: config-server y eureka se resuelven por nombre de servicio Docker
@@ -10,7 +10,7 @@ spring:
   config:
     activate:
       on-profile: docker
-    import: optional:configserver:http://config-server:8888
+    import: configserver:${CONFIG_SERVER_URL:http://config-server:8888}
 
 eureka:
   client:
@@ -18,9 +18,9 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka/
 
 
-    springdoc:
-      api-docs:
-      path: /v3/api-docs
-    swagger-ui:
-      path: /swagger-ui.html
-      operationsSorter: method
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method

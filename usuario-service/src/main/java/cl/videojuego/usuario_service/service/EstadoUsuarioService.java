@@ -13,6 +13,7 @@ import java.util.List;
  * Servicio para gestionar los estados de usuario (activo, inactivo, bloqueado, etc.).
  */
 @Service
+@SuppressWarnings("null")
 @RequiredArgsConstructor
 public class EstadoUsuarioService {
 

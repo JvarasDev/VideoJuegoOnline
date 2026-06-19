@@ -24,17 +24,17 @@ public class GlobalLoggingFilter implements GlobalFilter, Ordered {
 
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             long duration = System.currentTimeMillis() - startTime;
-            int statusCode = exchange.getResponse().getStatusCode() != null 
-                    ? exchange.getResponse().getStatusCode().value() 
+            int statusCode = exchange.getResponse().getStatusCode() != null
+                    ? exchange.getResponse().getStatusCode().value()
                     : 500;
-                    
-            log.info("Outgoing Response: method={} path={} status={} duration={}ms", 
+
+            log.info("Outgoing Response: method={} path={} status={} duration={}ms",
                     method, path, statusCode, duration);
         }));
     }
 
     @Override
     public int getOrder() {
-        return -1; // Se ejecutará temprano en la cadena de filtros
+        return -1;
     }
 }
