@@ -61,7 +61,7 @@ public class PagoService {
     }
 
     public PagoDTO registrar(PagoRegistroDTO dto) {
-        UsuarioDTO usuario = usuarioClient.buscarUsuarioPorId(dto.getIdUsuario());
+        usuarioClient.buscarUsuarioPorId(dto.getIdUsuario());
         ProductoTiendaDTO producto = productoClient.buscarProductoPorId(dto.getIdProducto());
 
         var metodoPago = metodoPagoRepository.findById(dto.getIdMetodoPago())

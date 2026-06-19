@@ -3,7 +3,7 @@ spring:
     name: pago-service
 
   config:
-    import: optional:configserver:http://localhost:8888
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888}
 
   datasource:
     url: jdbc:mysql://localhost:3307/pago_db

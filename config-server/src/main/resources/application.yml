@@ -7,9 +7,11 @@ spring:
     config:
       server:
         native:
-          # Ruta absoluta dentro del contenedor (montada via volumen en Docker).
-          # En local funciona si se ejecuta desde la raíz del proyecto con: java -jar
-          search-locations: file:/config-microservicios/
+          # classpath: → empaquetado dentro del JAR → funciona con mvn spring-boot:run y en Docker
+          # file:      → volumen Docker montado → permite sobreescribir sin rebuild (override opcional)
+          search-locations:
+            - classpath:/config-microservicios/
+            - file:/config-microservicios/
 
 server:
   port: 8888
@@ -38,4 +40,7 @@ spring:
     config:
       server:
         native:
-          search-locations: file:/config-microservicios/
+          # En Docker el volumen sobreescribe el classpath → permite hot-reload sin rebuild
+          search-locations:
+            - classpath:/config-microservicios/
+            - file:/config-microservicios/

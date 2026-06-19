@@ -13,6 +13,7 @@ import java.util.List;
  * Servicio para gestionar los roles de usuario (admin, jugador, moderador, etc.).
  */
 @Service
+@SuppressWarnings("null")
 @RequiredArgsConstructor
 public class RolService {
 
