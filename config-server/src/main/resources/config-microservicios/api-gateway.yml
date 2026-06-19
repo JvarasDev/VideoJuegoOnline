@@ -54,7 +54,21 @@ spring:
                 maxAge: 3600
 
           routes:
-            # ✅ lb:// delega en Eureka la resolución de instancias (load balancing real)
+            # ════════════════════════════════════════════════════════════
+            # PATRÓN DE RUTAS:
+            #   /nombre-servicio/**  → StripPrefix=1 → controller recibe /api/recurso/**
+            #   /api/recurso/**      → sin strip       → controller recibe /api/recurso/**
+            #
+            # Ambos patrones son válidos. Usar el que sea más conveniente.
+            # Ejemplo: GET http://localhost:8080/pago-service/api/pagos   ✅
+            #          GET http://localhost:8080/api/pagos                 ✅
+            # ════════════════════════════════════════════════════════════
+
+            # ── usuario-service ──────────────────────────────────────────
+            - id: usuario-service-api
+              uri: lb://USUARIO-SERVICE
+              predicates:
+                - Path=/api/usuarios/**
             - id: usuario-service
               uri: lb://USUARIO-SERVICE
               predicates:
@@ -62,6 +76,11 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # ── personaje-service ─────────────────────────────────────────
+            - id: personaje-service-api
+              uri: lb://PERSONAJE-SERVICE
+              predicates:
+                - Path=/api/personajes/**
             - id: personaje-service
               uri: lb://PERSONAJE-SERVICE
               predicates:
@@ -69,6 +88,11 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # ── arma-service ──────────────────────────────────────────────
+            - id: arma-service-api
+              uri: lb://ARMA-SERVICE
+              predicates:
+                - Path=/api/armas/**
             - id: arma-service
               uri: lb://ARMA-SERVICE
               predicates:
@@ -76,6 +100,11 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # ── tienda-service ────────────────────────────────────────────
+            - id: tienda-service-api
+              uri: lb://TIENDA-SERVICE
+              predicates:
+                - Path=/api/productos/**
             - id: tienda-service
               uri: lb://TIENDA-SERVICE
               predicates:
@@ -83,6 +112,11 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # ── pago-service ──────────────────────────────────────────────
+            - id: pago-service-api
+              uri: lb://PAGO-SERVICE
+              predicates:
+                - Path=/api/pagos/**
             - id: pago-service
               uri: lb://PAGO-SERVICE
               predicates:
@@ -90,6 +124,15 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # ── inventario-service ────────────────────────────────────────
+            - id: inventario-service-api-inventarios
+              uri: lb://INVENTARIO-SERVICE
+              predicates:
+                - Path=/api/inventarios/**
+            - id: inventario-service-api-items
+              uri: lb://INVENTARIO-SERVICE
+              predicates:
+                - Path=/api/items-inventario/**
             - id: inventario-service
               uri: lb://INVENTARIO-SERVICE
               predicates:
@@ -97,6 +140,11 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # ── mision-service ────────────────────────────────────────────
+            - id: mision-service-api
+              uri: lb://MISION-SERVICE
+              predicates:
+                - Path=/api/misiones/**
             - id: mision-service
               uri: lb://MISION-SERVICE
               predicates:
@@ -104,6 +152,11 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # ── ranking-service ───────────────────────────────────────────
+            - id: ranking-service-api
+              uri: lb://RANKING-SERVICE
+              predicates:
+                - Path=/api/rankings/**
             - id: ranking-service
               uri: lb://RANKING-SERVICE
               predicates:
@@ -111,6 +164,11 @@ spring:
               filters:
                 - StripPrefix=1
 
+            # ── combate-service ───────────────────────────────────────────
+            - id: combate-service-api
+              uri: lb://COMBATE-SERVICE
+              predicates:
+                - Path=/api/combates/**
             - id: combate-service
               uri: lb://COMBATE-SERVICE
               predicates:

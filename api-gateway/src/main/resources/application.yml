@@ -18,9 +18,9 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka/
 
 
-    springdoc:
-      api-docs:
-      path: /v3/api-docs
-    swagger-ui:
-      path: /swagger-ui.html
-      operationsSorter: method
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
