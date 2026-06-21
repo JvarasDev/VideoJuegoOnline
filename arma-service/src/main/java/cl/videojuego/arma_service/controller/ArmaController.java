@@ -8,13 +8,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/armas")
 @RequiredArgsConstructor
-@Tag(name = "Armas",description = "Operaciones relacionadas con la gestión de armas del videojuego"
+@Tag(name = "Armas",description = "Operaciones relacionadas con la gestiÃ³n de armas del videojuego"
 )
 public class ArmaController {
 
@@ -39,11 +44,11 @@ public class ArmaController {
 
     // POST: Crear una nueva arma
     @Operation(summary = "Registrar nueva arma",
-            description = "Permite registrar una nueva arma indicando nombre, daño, nivel mínimo, precio, tipo de arma y rareza."
+            description = "Permite registrar una nueva arma indicando nombre, daÃ±o, nivel mÃ­nimo, precio, tipo de arma y rareza."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Arma registrada correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos enviados en la solicitud"),
+            @ApiResponse(responseCode = "400", description = "Datos invÃ¡lidos enviados en la solicitud"),
             @ApiResponse(responseCode = "404", description = "Tipo de arma o rareza no encontrada"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
@@ -57,7 +62,7 @@ public class ArmaController {
 
     // GET: Listar armas por tipo
     @Operation(summary = "Listar armas por tipo",
-            description = "Retorna las armas asociadas a un tipo específico, por ejemplo espada, arco o bastón."
+            description = "Retorna las armas asociadas a un tipo especÃ­fico, por ejemplo espada, arco o bastÃ³n."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Armas por tipo listadas correctamente"),
@@ -74,7 +79,7 @@ public class ArmaController {
 
     // GET: Buscar armas por rareza
     @Operation(summary = "Listar armas por rareza",
-            description = "Retorna las armas asociadas a una rareza específica, por ejemplo común, rara, épica o legendaria."
+            description = "Retorna las armas asociadas a una rareza especÃ­fica, por ejemplo comÃºn, rara, Ã©pica o legendaria."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Armas por rareza listadas correctamente"),
@@ -89,16 +94,16 @@ public class ArmaController {
     }
 
 
-    // GET: Buscar armas por nivel mínimo exacto
-    @Operation(summary = "Listar armas por nivel mínimo",
-            description = "Retorna las armas que requieren un nivel mínimo específico para poder ser utilizadas."
+    // GET: Buscar armas por nivel mÃ­nimo exacto
+    @Operation(summary = "Listar armas por nivel mÃ­nimo",
+            description = "Retorna las armas que requieren un nivel mÃ­nimo especÃ­fico para poder ser utilizadas."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Armas por nivel mínimo listadas correctamente"),
+            @ApiResponse(responseCode = "200", description = "Armas por nivel mÃ­nimo listadas correctamente"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/nivel/{nivelMinimo}")
-    public ResponseEntity<List<ArmaDTO>> listarPorNivel(@Parameter(description = "Nivel mínimo requerido para utilizar el arma",
+    public ResponseEntity<List<ArmaDTO>> listarPorNivel(@Parameter(description = "Nivel mÃ­nimo requerido para utilizar el arma",
             example = "10")
             @PathVariable Integer nivelMinimo
     ) {
@@ -108,7 +113,7 @@ public class ArmaController {
 
     // GET: Buscar armas por nombre parecido
     @Operation(summary = "Buscar armas por nombre",
-                description = "Permite buscar armas utilizando una parte del nombre, sin distinguir mayúsculas o minúsculas."
+                description = "Permite buscar armas utilizando una parte del nombre, sin distinguir mayÃºsculas o minÃºsculas."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Armas encontradas correctamente"),
@@ -127,16 +132,16 @@ public class ArmaController {
 
     // GET: buscar armas con precio menor o igual
 
-    @Operation(summary = "Buscar armas por precio máximo",
+    @Operation(summary = "Buscar armas por precio mÃ¡ximo",
                description = "Retorna las armas cuyo precio sea menor o igual al valor indicado."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Armas filtradas por precio obtenidas correctamente"),
-            @ApiResponse(responseCode = "400", description = "Precio inválido"),
+            @ApiResponse(responseCode = "400", description = "Precio invÃ¡lido"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/precio-menor")
-    public ResponseEntity<List<ArmaDTO>> buscarPorPrecio( @Parameter(description = "Precio máximo permitido para la búsqueda",
+    public ResponseEntity<List<ArmaDTO>> buscarPorPrecio( @Parameter(description = "Precio mÃ¡ximo permitido para la bÃºsqueda",
             example = "10000")
             @RequestParam Integer precio
     ) {
@@ -147,7 +152,7 @@ public class ArmaController {
     // GET: buscar arma por ID
 
     @Operation(summary = "Buscar arma por ID",
-              description = "Permite obtener la información detallada de un arma específica mediante su identificador."
+              description = "Permite obtener la informaciÃ³n detallada de un arma especÃ­fica mediante su identificador."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Arma encontrada correctamente"),
@@ -156,7 +161,7 @@ public class ArmaController {
     })
     @GetMapping("/{idArma}")
     public ResponseEntity<ArmaDTO> buscarPorId(
-            @Parameter(description = "Identificador único del arma",
+            @Parameter(description = "Identificador Ãºnico del arma",
                     example = "1")
             @PathVariable Long idArma
     ) {

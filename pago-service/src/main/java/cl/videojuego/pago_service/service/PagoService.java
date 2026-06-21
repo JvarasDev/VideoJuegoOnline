@@ -54,6 +54,13 @@ public class PagoService {
                 .toList();
     }
 
+    
+    public List<PagoDTO> listarPorEstado(Long idEstadoPago) {
+        return pagoRepository.findByEstadoPago_IdEstadoPago(idEstadoPago)
+                .stream()
+                .map(this::resolverDTO)
+                .toList();
+    }
     public PagoDTO buscarPorId(Long idPago) {
         return pagoRepository.findById(idPago)
                 .map(this::resolverDTO)

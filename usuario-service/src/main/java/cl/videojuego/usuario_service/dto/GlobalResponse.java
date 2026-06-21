@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse<T> {
+public class GlobalResponse<T> {
     private int status;
     private String message;
     private T data;
@@ -19,18 +19,19 @@ public class ApiResponse<T> {
     @Builder.Default
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public static <T> ApiResponse<T> success(T data, String message) {
-        return ApiResponse.<T>builder()
+    public static <T> GlobalResponse<T> success(T data, String message) {
+        return GlobalResponse.<T>builder()
                 .status(200)
                 .message(message)
                 .data(data)
                 .build();
     }
 
-    public static <T> ApiResponse<T> error(int status, String message) {
-        return ApiResponse.<T>builder()
+    public static <T> GlobalResponse<T> error(int status, String message) {
+        return GlobalResponse.<T>builder()
                 .status(status)
                 .message(message)
                 .build();
     }
 }
+

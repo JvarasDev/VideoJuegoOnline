@@ -7,15 +7,15 @@ import lombok.Data;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PagedApiResponse<T> {
-    private ApiResponse<T> response;
+public class PagedGlobalResponse<T> {
+    private GlobalResponse<T> response;
     private int page;
     private int size;
     private long totalElements;
     private int totalPages;
 
-    public static <T> PagedApiResponse<T> of(ApiResponse<T> response, int page, int size, long totalElements, int totalPages) {
-        return PagedApiResponse.<T>builder()
+    public static <T> PagedGlobalResponse<T> of(GlobalResponse<T> response, int page, int size, long totalElements, int totalPages) {
+        return PagedGlobalResponse.<T>builder()
                 .response(response)
                 .page(page)
                 .size(size)
@@ -24,3 +24,4 @@ public class PagedApiResponse<T> {
                 .build();
     }
 }
+
