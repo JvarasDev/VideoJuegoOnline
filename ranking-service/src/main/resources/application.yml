@@ -1,6 +1,6 @@
 spring:
   application:
-    name: combate-service
+    name: ranking-service
   config:
     import: "optional:configserver:http://localhost:8888"
 

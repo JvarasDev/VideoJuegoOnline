@@ -2,9 +2,16 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/api-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/arma-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/combate-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/config-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/eureka-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/inventario-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mision-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/pago-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/personaje-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ranking-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tienda-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/usuario-service/src/main/java" charset="UTF-8" />
   </component>
 </project>

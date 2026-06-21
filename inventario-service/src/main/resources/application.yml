@@ -2,6 +2,11 @@ server:
   port: 0
 
 spring:
+  application:
+    name: inventario-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+
   datasource:
     url: jdbc:mysql://localhost:3307/inventario_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: videojuego
@@ -44,6 +49,7 @@ spring:
   config:
     activate:
       on-profile: docker
+    import: "optional:configserver:http://config-server:8888"
   datasource:
     url: jdbc:mysql://mysql:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: videojuego

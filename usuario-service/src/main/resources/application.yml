@@ -3,14 +3,10 @@ spring:
     name: usuario-service
 
   config:
-<<<<<<< HEAD
-      import: ${CONFIG_SERVER_URL:configserver:http://localhost:8888}
-=======
-    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888}
->>>>>>> 668bfee1df97e6aa611a3ff800aa75213a129bae
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
 
   datasource:
-    url: jdbc:mysql://localhost:3306/usuario_db
+    url: jdbc:mysql://localhost:3306/usuario_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -32,8 +28,8 @@ spring:
 server:
   port: 8086
 
-  springdoc:
-    api-docs:
+springdoc:
+  api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
@@ -47,3 +43,29 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+---
+# Perfil docker
+spring:
+  config:
+    activate:
+      on-profile: docker
+    import: "optional:configserver:http://config-server:8888"
+  datasource:
+    url: jdbc:mysql://mysql:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: videojuego
+    password: videojuego
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
