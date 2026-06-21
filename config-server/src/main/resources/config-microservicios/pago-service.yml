@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3307/pago_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: videojuego
-    password: videojuego
+    url: jdbc:mysql://localhost:3306/pago_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 0
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
