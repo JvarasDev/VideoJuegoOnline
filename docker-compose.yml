@@ -70,7 +70,12 @@ services:
     container_name: eureka-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+<<<<<<< HEAD
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - CONFIG_SEARCH_LOCATIONS = file:/config-microservicios/
+=======
       - CONFIG_SERVER_URL=http://config-server:8888
+>>>>>>> 668bfee1df97e6aa611a3ff800aa75213a129bae
     ports:
       - "8761:8761"
     networks:

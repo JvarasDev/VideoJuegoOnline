@@ -23,8 +23,8 @@ public class PagoController {
     private final PagoService pagoService;
 
 
-    @Operation(summary = "Listar todos los pagos", description = "Retorna una lista con todos los pagos registrados")
-    @ApiResponse(responseCode = "200", description = "")
+    @Operation(summary = "Listar todos los pagos", description = "Retorna una lista completa con todos los pagos registrados en el sistema")
+    @ApiResponse(responseCode = "200", description = "Lista de pagos obtenida correctamente")
     @GetMapping
     public ResponseEntity<List<PagoDTO>> listarTodos() {
         return ResponseEntity.ok(pagoService.listarTodos());
@@ -36,7 +36,7 @@ public class PagoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagoService.registrar(dto));
     }
 
-    @Operation(summary = "Buscar pago por ID", description = "Retorna el detalle de un pago específico")
+    @Operation(summary = "Buscar pago por ID", description = "Permite obtener la información detallada de un pago específico mediante su identificador")
     @GetMapping("/{idPago}")
     public ResponseEntity<PagoDTO> buscarPorId(@PathVariable Long idPago) {
         return ResponseEntity.ok(pagoService.buscarPorId(idPago));
