@@ -28,32 +28,34 @@ spring:
 
   cloud:
     gateway:
-      server:
-        webflux:
-          # ✅ Timeouts globales — evitan thread pool exhaustion ante servicios lentos
-          httpclient:
-            connect-timeout: 3000      # 3 segundos para establecer conexión
-            response-timeout: 10s      # 10 segundos para recibir respuesta
+      # ✅ Timeouts globales — evitan thread pool exhaustion ante servicios lentos
+      httpclient:
+        connect-timeout: 3000      # 3 segundos para establecer conexión
+        response-timeout: 10s      # 10 segundos para recibir respuesta
 
-          # ✅ CORS global explícito — ajustar allowed-origins según el frontend
-          globalcors:
-            cors-configurations:
-              '[/**]':
-                allowedOrigins:
-                  - "http://localhost:3000"
-                  - "http://localhost:5173"
-                allowedMethods:
-                  - GET
-                  - POST
-                  - PUT
-                  - DELETE
-                  - PATCH
-                  - OPTIONS
-                allowedHeaders: "*"
-                allowCredentials: true
-                maxAge: 3600
+      # ✅ CORS global explícito — ajustar allowed-origins según el frontend
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://localhost:5173"
+              - "http://localhost:8080"
+              - "http://169.254.175.123:3000"
+              - "http://169.254.175.123:8080"
+              - "http://169.254.175.123:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
 
-          routes:
+      routes:
             # ════════════════════════════════════════════════════════════
             # PATRÓN DE RUTAS:
             #   /nombre-servicio/**  → StripPrefix=1 → controller recibe /api/recurso/**

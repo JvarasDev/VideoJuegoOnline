@@ -6,9 +6,9 @@ spring:
     import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
 
   datasource:
-    url: jdbc:mysql://localhost:3306/usuario_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password:
+    url: jdbc:mysql://localhost:3307/usuario_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: videojuego
+    password: videojuego
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -26,7 +26,7 @@ spring:
     baseline-on-migrate: true
 
 server:
-  port: 8086
+  port: 0
 
 springdoc:
   api-docs:
