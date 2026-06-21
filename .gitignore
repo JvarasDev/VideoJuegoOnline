@@ -1,0 +1,55 @@
+# ===========================
+# IntelliJ IDEA
+# ===========================
+# IMPORTANTE: .idea/ se versiona PARCIALMENTE (ver abajo).
+# workspace.xml y los .iml se excluyen porque son específicos de cada máquina.
+*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/shelf
+.idea/httpRequests
+.idea/dataSources/
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+.idea/gradle.xml
+.idea/caches/
+.idea/libraries/
+
+# ===========================
+# Maven
+# ===========================
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ===========================
+# Spring Boot
+# ===========================
+HELP.md
+*.log
+spring-shell.log
+
+# ===========================
+# OS / Windows
+# ===========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ===========================
+# Docker
+# ===========================
+.dockerignore
+
+# ===========================
+# Secrets / Env locales
+# ===========================
+.env
+.env.local
+*.env

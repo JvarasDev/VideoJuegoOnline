@@ -9,6 +9,13 @@
         <option value="$PROJECT_DIR$/eureka-server/pom.xml" />
         <option value="$PROJECT_DIR$/usuario-service/pom.xml" />
         <option value="$PROJECT_DIR$/personaje-service/pom.xml" />
+        <option value="$PROJECT_DIR$/tienda-service/pom.xml" />
+        <option value="$PROJECT_DIR$/inventario-service/pom.xml" />
+        <option value="$PROJECT_DIR$/pago-service/pom.xml" />
+        <option value="$PROJECT_DIR$/arma-service/pom.xml" />
+        <option value="$PROJECT_DIR$/mision-service/pom.xml" />
+        <option value="$PROJECT_DIR$/combate-service/pom.xml" />
+        <option value="$PROJECT_DIR$/ranking-service/pom.xml" />
       </list>
     </option>
   </component>
