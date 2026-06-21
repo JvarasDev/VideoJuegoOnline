@@ -37,7 +37,8 @@ public class UsuarioController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "")
     @GetMapping
     public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarUsuarios() {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente"));
+        return ResponseEntity
+                .ok(ApiResponse.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente"));
     }
 
     @GetMapping("/{idUsuario}")
@@ -54,9 +55,9 @@ public class UsuarioController {
     @PutMapping("/{idUsuario}")
     public ResponseEntity<ApiResponse<UsuarioDTO>> actualizarUsuario(
             @PathVariable Long idUsuario,
-            @Valid @RequestBody UsuarioRegistroDTO dto
-    ) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.actualizarUsuario(idUsuario, dto), "Usuario actualizado exitosamente"));
+            @Valid @RequestBody UsuarioRegistroDTO dto) {
+        return ResponseEntity.ok(ApiResponse.success(usuarioService.actualizarUsuario(idUsuario, dto),
+                "Usuario actualizado exitosamente"));
     }
 
     @DeleteMapping("/{idUsuario}")
@@ -69,9 +70,9 @@ public class UsuarioController {
     public ResponseEntity<ApiResponse<UsuarioDTO>> actualizarRolYEstado(
             @PathVariable Long idUsuario,
             @RequestParam Long idRol,
-            @RequestParam Long idEstadoUsuario
-    ) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.actualizarRolYEstado(idUsuario, idRol, idEstadoUsuario), "Rol y estado actualizados"));
+            @RequestParam Long idEstadoUsuario) {
+        return ResponseEntity.ok(ApiResponse.success(
+                usuarioService.actualizarRolYEstado(idUsuario, idRol, idEstadoUsuario), "Rol y estado actualizados"));
     }
 
     // ─── Búsquedas de usuarios ────────────────────────────────────────────────
@@ -83,22 +84,26 @@ public class UsuarioController {
 
     @GetMapping("/rol/{idRol}")
     public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorRol(@PathVariable Long idRol) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarPorRol(idRol), "Usuarios por rol encontrados"));
+        return ResponseEntity
+                .ok(ApiResponse.success(usuarioService.listarPorRol(idRol), "Usuarios por rol encontrados"));
     }
 
     @GetMapping("/estado/{idEstadoUsuario}")
     public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorEstado(@PathVariable Long idEstadoUsuario) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarPorEstado(idEstadoUsuario), "Usuarios por estado encontrados"));
+        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarPorEstado(idEstadoUsuario),
+                "Usuarios por estado encontrados"));
     }
 
     @GetMapping("/nivel/{nivelCuenta}")
     public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorNivel(@PathVariable Integer nivelCuenta) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarPorNivel(nivelCuenta), "Usuarios por nivel encontrados"));
+        return ResponseEntity
+                .ok(ApiResponse.success(usuarioService.listarPorNivel(nivelCuenta), "Usuarios por nivel encontrados"));
     }
 
     @GetMapping("/registrados-despues")
     public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarRegistradosDespuesDe(@RequestParam LocalDate fecha) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarRegistradosDespuesDe(fecha), "Usuarios registrados después de la fecha encontrados"));
+        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarRegistradosDespuesDe(fecha),
+                "Usuarios registrados después de la fecha encontrados"));
     }
 
     @GetMapping("/buscar-por-fecha")
@@ -123,11 +128,13 @@ public class UsuarioController {
 
     @GetMapping("/estados")
     public ResponseEntity<ApiResponse<List<EstadoUsuario>>> listarEstados() {
-        return ResponseEntity.ok(ApiResponse.success(estadoUsuarioService.listarEstados(), "Estados listados exitosamente"));
+        return ResponseEntity
+                .ok(ApiResponse.success(estadoUsuarioService.listarEstados(), "Estados listados exitosamente"));
     }
 
     @GetMapping("/estados/{idEstadoUsuario}")
     public ResponseEntity<ApiResponse<EstadoUsuario>> buscarEstadoPorId(@PathVariable Long idEstadoUsuario) {
-        return ResponseEntity.ok(ApiResponse.success(estadoUsuarioService.buscarPorId(idEstadoUsuario), "Estado encontrado"));
+        return ResponseEntity
+                .ok(ApiResponse.success(estadoUsuarioService.buscarPorId(idEstadoUsuario), "Estado encontrado"));
     }
 }
