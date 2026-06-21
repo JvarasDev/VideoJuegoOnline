@@ -34,7 +34,7 @@ public class UsuarioController {
 
     // ─── Usuarios ─────────────────────────────────────────────────────────────
     @Operation(summary = "Listar todos los pagos", description = "Retorna una lista con todos los pagos registrados")
-    @ApiResponse(responseCode = "200", description = "")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "")
     @GetMapping
     public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarUsuarios() {
         return ResponseEntity.ok(ApiResponse.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente"));

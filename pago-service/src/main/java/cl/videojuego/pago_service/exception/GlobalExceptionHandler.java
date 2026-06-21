@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
                 ex.getStatus().getReasonPhrase(),
                 ex.getMessage()
         );
-        return new ResponseEntity<>(error, ex.getStatus());
+        return ResponseEntity.status(ex.getStatus()).body(error);
     }
 
     /**

@@ -24,9 +24,8 @@ public class GlobalLoggingFilter implements GlobalFilter, Ordered {
 
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             long duration = System.currentTimeMillis() - startTime;
-            int statusCode = exchange.getResponse().getStatusCode() != null
-                    ? exchange.getResponse().getStatusCode().value()
-                    : 500;
+            org.springframework.http.HttpStatusCode status = exchange.getResponse().getStatusCode();
+            int statusCode = status != null ? status.value() : 500;
 
             log.info("Outgoing Response: method={} path={} status={} duration={}ms",
                     method, path, statusCode, duration);
