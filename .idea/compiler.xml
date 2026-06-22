@@ -8,7 +8,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="usuario-service" />
         <module name="config-server" />
         <module name="eureka-server" />
       </profile>
@@ -37,6 +36,15 @@
         <module name="inventario-service" />
         <module name="combate-service" />
         <module name="arma-service" />
+      </profile>
+      <profile name="Annotation profile for usuario-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="usuario-service" />
       </profile>
     </annotationProcessing>
   </component>

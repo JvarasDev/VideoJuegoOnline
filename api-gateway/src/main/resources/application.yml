@@ -97,14 +97,16 @@ springdoc:
         url: /v3/api-docs/tienda-service
       - name: INVENTARIO-SERVICE
         url: /v3/api-docs/inventario-service
-      - name: MONEDA-SERVICE
-        url: /v3/api-docs/moneda-service
+      - name: ARMA-SERVICE
+        url: /v3/api-docs/arma-service
       - name: MISION-SERVICE
-        url: /v3/api-docs/mision-service
+        url: /v3/api-docs/arma-service
+      - name: COMBATE-SERVICE
+        url: /v3/api-docs/combate-service
       - name: RANKING-SERVICE
         url: /v3/api-docs/ranking-service
-      - name: LOGRO-SERVICE
-        url: /v3/api-docs/logro-service
+      - name: PERSONAJE-SERVICE
+        url: /v3/api-docs/personaje-service
     operationsSorter: method
 
 eureka:
