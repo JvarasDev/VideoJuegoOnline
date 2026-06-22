@@ -1,4 +1,10 @@
 {
     "java.configuration.updateBuildConfiguration": "disabled",
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "chat.tools.terminal.autoApprove": {
+        "/^Set-Location -Path 'C:/Users/Bastian/Desktop/VideoJuegoOnline'; python -c \"from pathlib import Path; files=\\[Path\\('api-gateway/src/main/resources/application\\.yml'\\), Path\\('config-server/src/main/resources/config-microservicios/api-gateway\\.yml'\\)\\]; repl=\\{'lb://USUARIO-SERVICE':'lb://usuario-service','lb://PAGO-SERVICE':'lb://pago-service','lb://TIENDA-SERVICE':'lb://tienda-service','lb://INVENTARIO-SERVICE':'lb://inventario-service','lb://MONEDA-SERVICE':'lb://moneda-service','lb://MISION-SERVICE':'lb://mision-service','lb://RANKING-SERVICE':'lb://ranking-service','lb://LOGRO-SERVICE':'lb://logro-service'\\}; \\[f\\.write_text\\(f\\.read_text\\(encoding='utf-8'\\)\\.replace\\(old,new\\), encoding='utf-8'\\) for f in files for old,new in repl\\.items\\(\\)\\]; print\\('done'\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
 }

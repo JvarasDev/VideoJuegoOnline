@@ -1,0 +1,10 @@
+### Fragmento para insertar en Dockerfile (builder stage) si tienes un certificado CA/proxy
+# Copiar el certificado dentro de la imagen y agregar al truststore de la JVM
+COPY corp-proxy.crt /tmp/corp-proxy.crt
+RUN keytool -importcert -noprompt -trustcacerts -alias corp-proxy \
+    -file /tmp/corp-proxy.crt \
+    -keystore $JAVA_HOME/lib/security/cacerts \
+    -storepass changeit
+
+# Nota: este fragmento asume que la imagen base define $JAVA_HOME (p. ej. eclipse-temurin images).
+# Inserta estas líneas en la etapa `builder` (antes de ejecutar `./mvnw package`).

@@ -8,13 +8,13 @@ import lombok.Data;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PagedApiResponse<T> {
-    private ApiResponse<T> response;
+    private ApiResponsev1<T> response;
     private int page;
     private int size;
     private long totalElements;
     private int totalPages;
 
-    public static <T> PagedApiResponse<T> of(ApiResponse<T> response, int page, int size, long totalElements, int totalPages) {
+    public static <T> PagedApiResponse<T> of(ApiResponsev1<T> response, int page, int size, long totalElements, int totalPages) {
         return PagedApiResponse.<T>builder()
                 .response(response)
                 .page(page)

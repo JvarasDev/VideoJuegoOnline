@@ -196,6 +196,10 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_URL=http://config-server:8888
       - DB_NAME=pago_db
+      - EUREKA_INSTANCE_HOSTNAME=pago-service
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=false
+    ports:
+      - "8085:8080"
     networks:
       - videojuegos-net
     depends_on:

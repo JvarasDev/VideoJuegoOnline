@@ -1,0 +1,49 @@
+<!--
+  Plantilla `settings.xml` para Maven.
+  - Rellena las secciones de `<proxies>` o `<mirrors>` según tu infraestructura.
+  - Copia este archivo a la raíz del servicio como `settings.xml` antes de ejecutar el build Docker,
+    o monta/pega en `~/.m2/settings.xml` en el host para pruebas locales.
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <!-- Ejemplo de proxy corporativo -->
+  <proxies>
+    <!--
+    <proxy>
+      <id>corp-proxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy.corp.example.com</host>
+      <port>8080</port>
+      <username>usuario</username>
+      <password>password</password>
+      <nonProxyHosts>localhost|127.0.0.1</nonProxyHosts>
+    </proxy>
+    -->
+  </proxies>
+
+  <!-- Ejemplo de mirror (Artifactory/Nexus interno) -->
+  <mirrors>
+    <!--
+    <mirror>
+      <id>internal-mirror</id>
+      <mirrorOf>*</mirrorOf>
+      <url>https://maven.internal.example.com/repository/maven-public/</url>
+    </mirror>
+    -->
+  </mirrors>
+
+  <!-- Ajustes opcionales para servidores (credenciales) -->
+  <servers>
+    <!--
+    <server>
+      <id>deployment-repo</id>
+      <username>myuser</username>
+      <password>mypassword</password>
+    </server>
+    -->
+  </servers>
+
+</settings>

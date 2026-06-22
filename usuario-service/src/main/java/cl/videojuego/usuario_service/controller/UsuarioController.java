@@ -2,7 +2,7 @@ package cl.videojuego.usuario_service.controller;
 
 import cl.videojuego.usuario_service.dto.UsuarioDTO;
 import cl.videojuego.usuario_service.dto.UsuarioRegistroDTO;
-import cl.videojuego.usuario_service.dto.ApiResponse;
+import cl.videojuego.usuario_service.dto.ApiResponsev1;
 import cl.videojuego.usuario_service.model.EstadoUsuario;
 import cl.videojuego.usuario_service.model.Rol;
 import cl.videojuego.usuario_service.service.EstadoUsuarioService;
@@ -10,6 +10,7 @@ import cl.videojuego.usuario_service.service.RolService;
 import cl.videojuego.usuario_service.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -35,11 +36,7 @@ public class UsuarioController {
     private final RolService rolService;
     private final EstadoUsuarioService estadoUsuarioService;
 
-<<<<<<< Updated upstream
     // ─── Usuarios ─────────────────────────────────────────────────────────────
-    @Operation(summary = "Listar todos los pagos", description = "Retorna una lista con todos los pagos registrados")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "")
-=======
 
     //Listar Usuarios
     @Operation(summary = "Listar todos los usuarios",
@@ -49,11 +46,11 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Usuarios listados correctamente"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
->>>>>>> Stashed changes
+
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarUsuarios() {
+    public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarUsuarios() {
         return ResponseEntity
-                .ok(ApiResponse.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente"));
+                .ok(ApiResponsev1.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente"));
     }
 
 
@@ -68,10 +65,10 @@ public class UsuarioController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/{idUsuario}")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> buscarPorId(
-            @Parameter(description = "Identificador único del usuario", example = "1",
+    public ResponseEntity<ApiResponsev1<UsuarioDTO>> buscarPorId(
+            @Parameter(description = "Identificador único del usuario", example = "1")
             @PathVariable Long idUsuario) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.buscarPorId(idUsuario), "Usuario encontrado"));
+        return ResponseEntity.ok(ApiResponsev1.success(usuarioService.buscarPorId(idUsuario), "Usuario encontrado"));
     }
 
 
@@ -88,9 +85,9 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping
-    public ResponseEntity<ApiResponse<UsuarioDTO>> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO dto) {
+    public ResponseEntity<ApiResponsev1<UsuarioDTO>> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(usuarioService.registrarUsuario(dto), "Usuario registrado exitosamente"));
+                .body(ApiResponsev1.success(usuarioService.registrarUsuario(dto), "Usuario registrado exitosamente"));
     }
 
 
@@ -107,10 +104,10 @@ public class UsuarioController {
     })
 
     @PutMapping("/{idUsuario}")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> actualizarUsuario(
+    public ResponseEntity<ApiResponsev1<UsuarioDTO>> actualizarUsuario(
             @PathVariable Long idUsuario,
             @Valid @RequestBody UsuarioRegistroDTO dto) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.actualizarUsuario(idUsuario, dto),
+        return ResponseEntity.ok(ApiResponsev1.success(usuarioService.actualizarUsuario(idUsuario, dto),
                 "Usuario actualizado exitosamente"));
     }
 
@@ -126,9 +123,9 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @DeleteMapping("/{idUsuario}")
-    public ResponseEntity<ApiResponse<Void>> eliminarUsuario(@PathVariable Long idUsuario) {
+    public ResponseEntity<ApiResponsev1<Void>> eliminarUsuario(@PathVariable Long idUsuario) {
         usuarioService.eliminarUsuario(idUsuario);
-        return ResponseEntity.ok(ApiResponse.success(null, "Usuario eliminado exitosamente"));
+        return ResponseEntity.ok(ApiResponsev1.success(null, "Usuario eliminado exitosamente"));
     }
 
 
@@ -144,11 +141,11 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PutMapping("/{idUsuario}/rol-estado")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> actualizarRolYEstado(
+    public ResponseEntity<ApiResponsev1<UsuarioDTO>> actualizarRolYEstado(
             @PathVariable Long idUsuario,
             @RequestParam Long idRol,
             @RequestParam Long idEstadoUsuario) {
-        return ResponseEntity.ok(ApiResponse.success(
+        return ResponseEntity.ok(ApiResponsev1.success(
                 usuarioService.actualizarRolYEstado(idUsuario, idRol, idEstadoUsuario), "Rol y estado actualizados"));
     }
 
@@ -166,10 +163,10 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/buscar-por-correo")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> buscarPorCorreo(
+    public ResponseEntity<ApiResponsev1<UsuarioDTO>> buscarPorCorreo(
             @Parameter(description = "Correo electrónico del usuario", example = "lizz123@correo.cl")
             @RequestParam String correo) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.buscarPorCorreo(correo), "Usuario encontrado"));
+        return ResponseEntity.ok(ApiResponsev1.success(usuarioService.buscarPorCorreo(correo), "Usuario encontrado"));
     }
 
 
@@ -183,16 +180,10 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/rol/{idRol}")
-<<<<<<< Updated upstream
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorRol(@PathVariable Long idRol) {
-        return ResponseEntity
-                .ok(ApiResponse.success(usuarioService.listarPorRol(idRol), "Usuarios por rol encontrados"));
-=======
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorRol(
+    public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarPorRol(
             @Parameter(description = "Identificador del rol", example = "1")
             @PathVariable Long idRol) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarPorRol(idRol), "Usuarios por rol encontrados"));
->>>>>>> Stashed changes
+        return ResponseEntity.ok(ApiResponsev1.success(usuarioService.listarPorRol(idRol), "Usuarios por rol encontrados"));
     }
 
 
@@ -207,16 +198,10 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/estado/{idEstadoUsuario}")
-<<<<<<< Updated upstream
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorEstado(@PathVariable Long idEstadoUsuario) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarPorEstado(idEstadoUsuario),
-                "Usuarios por estado encontrados"));
-=======
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorEstado(
+    public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarPorEstado(
             @Parameter(description = "Identificador del estado del usuario", example = "1")
             @PathVariable Long idEstadoUsuario) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarPorEstado(idEstadoUsuario), "Usuarios por estado encontrados"));
->>>>>>> Stashed changes
+        return ResponseEntity.ok(ApiResponsev1.success(usuarioService.listarPorEstado(idEstadoUsuario), "Usuarios por estado encontrados"));
     }
 
 
@@ -230,16 +215,10 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/nivel/{nivelCuenta}")
-<<<<<<< Updated upstream
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorNivel(@PathVariable Integer nivelCuenta) {
-        return ResponseEntity
-                .ok(ApiResponse.success(usuarioService.listarPorNivel(nivelCuenta), "Usuarios por nivel encontrados"));
-=======
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorNivel(
+    public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarPorNivel(
             @Parameter(description = "Nivel de cuenta del usuario", example = "10")
             @PathVariable Integer nivelCuenta) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarPorNivel(nivelCuenta), "Usuarios por nivel encontrados"));
->>>>>>> Stashed changes
+        return ResponseEntity.ok(ApiResponsev1.success(usuarioService.listarPorNivel(nivelCuenta), "Usuarios por nivel encontrados"));
     }
 
 
@@ -254,16 +233,10 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/registrados-despues")
-<<<<<<< Updated upstream
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarRegistradosDespuesDe(@RequestParam LocalDate fecha) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarRegistradosDespuesDe(fecha),
-                "Usuarios registrados después de la fecha encontrados"));
-=======
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarRegistradosDespuesDe(
+    public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarRegistradosDespuesDe(
             @Parameter(description = "Fecha desde la cual se buscarán usuarios", example = "2026-06-01")
             @RequestParam LocalDate fecha) {
-        return ResponseEntity.ok(ApiResponse.success(usuarioService.listarRegistradosDespuesDe(fecha), "Usuarios registrados después de la fecha encontrados"));
->>>>>>> Stashed changes
+        return ResponseEntity.ok(ApiResponsev1.success(usuarioService.listarRegistradosDespuesDe(fecha), "Usuarios registrados después de la fecha encontrados"));
     }
 
 
@@ -280,11 +253,11 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/buscar-por-fecha")
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> listarPorFecha(
+    public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarPorFecha(
             @Parameter(description = "Fecha exacta de registro", example = "2026-06-01")
             @RequestParam LocalDate fecha) {
         List<UsuarioDTO> usuarios = usuarioService.listarPorFechaVerificandoResultados(fecha);
-        return ResponseEntity.ok(ApiResponse.success(usuarios, "Usuarios encontrados por fecha"));
+        return ResponseEntity.ok(ApiResponsev1.success(usuarios, "Usuarios encontrados por fecha"));
     }
 
     // ─── Roles ────────────────────────────────────────────────────────────────
@@ -300,8 +273,8 @@ public class UsuarioController {
     })
 
     @GetMapping("/roles")
-    public ResponseEntity<ApiResponse<List<Rol>>> listarRoles() {
-        return ResponseEntity.ok(ApiResponse.success(rolService.listarRoles(), "Roles listados exitosamente"));
+    public ResponseEntity<ApiResponsev1<List<Rol>>> listarRoles() {
+        return ResponseEntity.ok(ApiResponsev1.success(rolService.listarRoles(), "Roles listados exitosamente"));
     }
 
 
@@ -317,10 +290,10 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/roles/{idRol}")
-    public ResponseEntity<ApiResponse<Rol>> buscarRolPorId(
+    public ResponseEntity<ApiResponsev1<Rol>> buscarRolPorId(
             @Parameter(description = "Nuevo rol del usuario", example = "2")
             @PathVariable Long idRol) {
-        return ResponseEntity.ok(ApiResponse.success(rolService.buscarPorId(idRol), "Rol encontrado"));
+        return ResponseEntity.ok(ApiResponsev1.success(rolService.buscarPorId(idRol), "Rol encontrado"));
     }
 
     // ─── Estados ──────────────────────────────────────────────────────────────
@@ -336,9 +309,9 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/estados")
-    public ResponseEntity<ApiResponse<List<EstadoUsuario>>> listarEstados() {
+    public ResponseEntity<ApiResponsev1<List<EstadoUsuario>>> listarEstados() {
         return ResponseEntity
-                .ok(ApiResponse.success(estadoUsuarioService.listarEstados(), "Estados listados exitosamente"));
+                .ok(ApiResponsev1.success(estadoUsuarioService.listarEstados(), "Estados listados exitosamente"));
     }
 
 
@@ -353,15 +326,9 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/estados/{idEstadoUsuario}")
-<<<<<<< Updated upstream
-    public ResponseEntity<ApiResponse<EstadoUsuario>> buscarEstadoPorId(@PathVariable Long idEstadoUsuario) {
-        return ResponseEntity
-                .ok(ApiResponse.success(estadoUsuarioService.buscarPorId(idEstadoUsuario), "Estado encontrado"));
-=======
-    public ResponseEntity<ApiResponse<EstadoUsuario>> buscarEstadoPorId(
+    public ResponseEntity<ApiResponsev1<EstadoUsuario>> buscarEstadoPorId(
             @Parameter(description = "Nuevo estado del usuario", example = "1")
             @PathVariable Long idEstadoUsuario) {
-        return ResponseEntity.ok(ApiResponse.success(estadoUsuarioService.buscarPorId(idEstadoUsuario), "Estado encontrado"));
->>>>>>> Stashed changes
+        return ResponseEntity.ok(ApiResponsev1.success(estadoUsuarioService.buscarPorId(idEstadoUsuario), "Estado encontrado"));
     }
 }

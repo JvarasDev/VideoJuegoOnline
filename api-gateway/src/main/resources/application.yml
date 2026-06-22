@@ -1,26 +1,160 @@
+server:
+  port: ${SERVER_PORT:8080}
+
 spring:
   application:
     name: api-gateway
+  main:
+    web-application-type: reactive
+
   config:
-    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888}
+    import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
 
----
-# ✅ Perfil docker: config-server y eureka se resuelven por nombre de servicio Docker
-spring:
-  config:
-    activate:
-      on-profile: docker
-    import: configserver:${CONFIG_SERVER_URL:http://config-server:8888}
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 3000
+        response-timeout: 10s
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://localhost:5173"
+              - "http://localhost:8080"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+      routes:
+        - id: usuario-docs
+          uri: lb://usuario-service
+          predicates:
+            - Path=/v3/api-docs/usuario-service
+          filters:
+            - RewritePath=/v3/api-docs/usuario-service, /v3/api-docs
+        - id: pago-docs
+          uri: lb://pago-service
+          predicates:
+            - Path=/v3/api-docs/pago-service
+          filters:
+            - RewritePath=/v3/api-docs/pago-service, /v3/api-docs
+        - id: tienda-docs
+          uri: lb://tienda-service
+          predicates:
+            - Path=/v3/api-docs/tienda-service
+          filters:
+            - RewritePath=/v3/api-docs/tienda-service, /v3/api-docs
+        - id: inventario-docs
+          uri: lb://inventario-service
+          predicates:
+            - Path=/v3/api-docs/inventario-service
+          filters:
+            - RewritePath=/v3/api-docs/inventario-service, /v3/api-docs
+        - id: moneda-docs
+          uri: lb://moneda-service
+          predicates:
+            - Path=/v3/api-docs/moneda-service
+          filters:
+            - RewritePath=/v3/api-docs/moneda-service, /v3/api-docs
+        - id: mision-docs
+          uri: lb://mision-service
+          predicates:
+            - Path=/v3/api-docs/mision-service
+          filters:
+            - RewritePath=/v3/api-docs/mision-service, /v3/api-docs
+        - id: ranking-docs
+          uri: lb://ranking-service
+          predicates:
+            - Path=/v3/api-docs/ranking-service
+          filters:
+            - RewritePath=/v3/api-docs/ranking-service, /v3/api-docs
+        - id: logro-docs
+          uri: lb://logro-service
+          predicates:
+            - Path=/v3/api-docs/logro-service
+          filters:
+            - RewritePath=/v3/api-docs/logro-service, /v3/api-docs
 
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - name: USUARIO-SERVICE
+        url: /v3/api-docs/usuario-service
+      - name: PAGO-SERVICE
+        url: /v3/api-docs/pago-service
+      - name: TIENDA-SERVICE
+        url: /v3/api-docs/tienda-service
+      - name: INVENTARIO-SERVICE
+        url: /v3/api-docs/inventario-service
+      - name: MONEDA-SERVICE
+        url: /v3/api-docs/moneda-service
+      - name: MISION-SERVICE
+        url: /v3/api-docs/mision-service
+      - name: RANKING-SERVICE
+        url: /v3/api-docs/ranking-service
+      - name: LOGRO-SERVICE
+        url: /v3/api-docs/logro-service
     operationsSorter: method
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: false
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    cl.videojuego.api_gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+---
+# Perfil docker: dentro de red Docker de compose
+spring:
+  config:
+    activate:
+      on-profile: docker
+    import: optional:configserver:${CONFIG_SERVER_URL:http://config-server:8888}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: false
+    fetch-registry: true
+
+logging:
+  level:
+    cl.videojuego.api_gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG
