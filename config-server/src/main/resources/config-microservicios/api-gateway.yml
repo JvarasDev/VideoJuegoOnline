@@ -246,6 +246,27 @@ spring:
               filters:
                 - RewritePath=/v3/api-docs/logro-service, /v3/api-docs
 
+            - id: personaje-docs
+              uri: lb://personaje-service
+              predicates:
+                - Path=/v3/api-docs/personaje-service
+              filters:
+                - RewritePath=/v3/api-docs/personaje-service, /v3/api-docs
+
+            - id: arma-docs
+              uri: lb://arma-service
+              predicates:
+                - Path=/v3/api-docs/arma-service
+              filters:
+                - RewritePath=/v3/api-docs/arma-service, /v3/api-docs
+
+            - id: combate-docs
+              uri: lb://combate-service
+              predicates:
+                - Path=/v3/api-docs/combate-service
+              filters:
+                - RewritePath=/v3/api-docs/combate-service, /v3/api-docs
+
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -269,6 +290,12 @@ springdoc:
         url: /v3/api-docs/ranking-service
       - name: LOGRO-SERVICE
         url: /v3/api-docs/logro-service
+      - name: PERSONAJE-SERVICE
+        url: /v3/api-docs/personaje-service
+      - name: ARMA-SERVICE
+        url: /v3/api-docs/arma-service
+      - name: COMBATE-SERVICE
+        url: /v3/api-docs/combate-service
     operationsSorter: method
 
 eureka:
