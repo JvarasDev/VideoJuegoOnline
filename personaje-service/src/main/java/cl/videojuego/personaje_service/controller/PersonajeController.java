@@ -109,15 +109,9 @@ public class PersonajeController {
     })
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<PersonajeDTO>> listarPorUsuario(
-<<<<<<< HEAD
             @Parameter(description = "Identificador del usuario propietario de los personajes", example = "1")
             @PathVariable Long idUsuario
     ) {
-=======
-
-            @Parameter(description = "Identificador del usuario propietario de los personajes", example = "1")
-            @PathVariable Long idUsuario) {
->>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
         return ResponseEntity.ok(personajeService.listarPorUsuario(idUsuario));
     }
 
