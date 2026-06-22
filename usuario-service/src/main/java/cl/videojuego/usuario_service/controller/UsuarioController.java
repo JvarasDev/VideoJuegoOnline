@@ -1,8 +1,14 @@
 package cl.videojuego.usuario_service.controller;
 
+import cl.videojuego.usuario_service.dto.GlobalResponse;
+import cl.videojuego.usuario_service.dto.LoginRequestDTO;
+import cl.videojuego.usuario_service.dto.AuthResponseDTO;
 import cl.videojuego.usuario_service.dto.UsuarioDTO;
 import cl.videojuego.usuario_service.dto.UsuarioRegistroDTO;
+<<<<<<< HEAD
 import cl.videojuego.usuario_service.dto.ApiResponsev1;
+=======
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
 import cl.videojuego.usuario_service.model.EstadoUsuario;
 import cl.videojuego.usuario_service.model.Rol;
 import cl.videojuego.usuario_service.service.EstadoUsuarioService;
@@ -14,21 +20,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Controlador REST para la gestión de usuarios, roles y estados.
- * Base URL: /api/usuarios
- */
 @RestController
 @RequestMapping("/api/usuarios")
-@RequiredArgsConstructor
 @Tag(name = "Usuarios",description = "Operaciones relacionadas con usuarios, roles y estados del sistema de videojuegos")
 public class UsuarioController {
 
@@ -36,110 +35,122 @@ public class UsuarioController {
     private final RolService rolService;
     private final EstadoUsuarioService estadoUsuarioService;
 
+<<<<<<< HEAD
     // ─── Usuarios ─────────────────────────────────────────────────────────────
+=======
+    public UsuarioController(UsuarioService usuarioService, RolService rolService, EstadoUsuarioService estadoUsuarioService) {
+        this.usuarioService = usuarioService;
+        this.rolService = rolService;
+        this.estadoUsuarioService = estadoUsuarioService;
+    }
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
 
-    //Listar Usuarios
-    @Operation(summary = "Listar todos los usuarios",
-            description = "Retorna una lista completa con todos los usuarios registrados en el sistema."
-    )
-    @ApiResponses({
+    // Listar Usuarios
+    @Operation(summary = "Listar todos los usuarios", description = "Retorna una lista completa con todos los usuarios registrados en el sistema.")
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuarios listados correctamente"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
+<<<<<<< HEAD
 
     @GetMapping
     public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarUsuarios() {
         return ResponseEntity
                 .ok(ApiResponsev1.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente"));
+=======
+    @GetMapping
+    public ResponseEntity<GlobalResponse<List<UsuarioDTO>>> listarUsuarios() {
+        return ResponseEntity.ok(GlobalResponse.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente"));
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 
-
-    // Buscar  Usuario por ID
-
-    @Operation(summary = "Buscar usuario por ID",
-            description = "Obtiene los datos de un usuario específico mediante su identificador."
-    )
-    @ApiResponses({
+    // Buscar Usuario por ID
+    @Operation(summary = "Buscar usuario por ID", description = "Obtiene los datos de un usuario especifico mediante su identificador.")
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuario encontrado correctamente"),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/{idUsuario}")
+<<<<<<< HEAD
     public ResponseEntity<ApiResponsev1<UsuarioDTO>> buscarPorId(
             @Parameter(description = "Identificador único del usuario", example = "1")
             @PathVariable Long idUsuario) {
         return ResponseEntity.ok(ApiResponsev1.success(usuarioService.buscarPorId(idUsuario), "Usuario encontrado"));
+=======
+    public ResponseEntity<GlobalResponse<UsuarioDTO>> buscarPorId(@Parameter(description = "Identificador unico del usuario", example = "1") @PathVariable Long idUsuario) {
+        return ResponseEntity.ok(GlobalResponse.success(usuarioService.buscarPorId(idUsuario), "Usuario encontrado"));
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 
-
-
     // Registrar Nuevo Usuario
-    @Operation(
-            summary = "Registrar nuevo usuario",
-            description = "Permite registrar un nuevo usuario en el sistema de videojuegos."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Usuario registrado correctamente"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Rol o estado de usuario no encontrado"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @Operation(summary = "Registrar nuevo usuario", description = "Permite registrar un nuevo usuario en el sistema de videojuegos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+            @ApiResponse(responseCode = "404", description = "Rol o estado de usuario no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping
+<<<<<<< HEAD
     public ResponseEntity<ApiResponsev1<UsuarioDTO>> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponsev1.success(usuarioService.registrarUsuario(dto), "Usuario registrado exitosamente"));
+=======
+    public ResponseEntity<GlobalResponse<UsuarioDTO>> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(GlobalResponse.success(usuarioService.registrarUsuario(dto), "Usuario registrado exitosamente"));
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 
-
     // Actualizar Usuario
-
-    @Operation(summary = "Actualizar usuario",
-            description = "Permite modificar los datos de un usuario existente."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Usuario, rol o estado no encontrado"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @Operation(summary = "Actualizar usuario", description = "Permite modificar los datos de un usuario existente.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+            @ApiResponse(responseCode = "404", description = "Usuario, rol o estado no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-
     @PutMapping("/{idUsuario}")
+<<<<<<< HEAD
     public ResponseEntity<ApiResponsev1<UsuarioDTO>> actualizarUsuario(
             @PathVariable Long idUsuario,
             @Valid @RequestBody UsuarioRegistroDTO dto) {
         return ResponseEntity.ok(ApiResponsev1.success(usuarioService.actualizarUsuario(idUsuario, dto),
                 "Usuario actualizado exitosamente"));
+=======
+    public ResponseEntity<GlobalResponse<UsuarioDTO>> actualizarUsuario(@Parameter(description = "Identificador del usuario", example = "1") @PathVariable Long idUsuario, @Valid @RequestBody UsuarioRegistroDTO dto) {
+        return ResponseEntity.ok(GlobalResponse.success(usuarioService.actualizarUsuario(idUsuario, dto), "Usuario actualizado exitosamente"));
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 
-
-    //Eliminar un Usuario del Sistema
-
-    @Operation(summary = "Eliminar usuario",
-             description = "Elimina un usuario del sistema mediante su identificador."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Usuario eliminado correctamente"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    // Eliminar (Inactivar) Usuario
+    @Operation(summary = "Eliminar (inactivar) usuario", description = "Cambia el estado del usuario a inactivo en lugar de eliminarlo fsicamente de la base de datos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Usuario inactivado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @DeleteMapping("/{idUsuario}")
+<<<<<<< HEAD
     public ResponseEntity<ApiResponsev1<Void>> eliminarUsuario(@PathVariable Long idUsuario) {
         usuarioService.eliminarUsuario(idUsuario);
         return ResponseEntity.ok(ApiResponsev1.success(null, "Usuario eliminado exitosamente"));
+=======
+    public ResponseEntity<Void> eliminarUsuario(@Parameter(description = "Identificador del usuario a inactivar", example = "1") @PathVariable Long idUsuario) {
+        usuarioService.eliminarUsuario(idUsuario);
+        return ResponseEntity.noContent().build();
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 
 
 
-    // Actualizar Rol y Estado
-
-    @Operation(summary = "Actualizar rol y estado de usuario",
-               description = "Permite cambiar el rol y el estado de un usuario existente."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Rol y estado actualizados correctamente"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Usuario, rol o estado no encontrado"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    // Listar por Roles
+    @Operation(summary = "Listar roles", description = "Retorna todos los roles disponibles para los usuarios.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Roles listados correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
+<<<<<<< HEAD
     @PutMapping("/{idUsuario}/rol-estado")
     public ResponseEntity<ApiResponsev1<UsuarioDTO>> actualizarRolYEstado(
             @PathVariable Long idUsuario,
@@ -275,60 +286,65 @@ public class UsuarioController {
     @GetMapping("/roles")
     public ResponseEntity<ApiResponsev1<List<Rol>>> listarRoles() {
         return ResponseEntity.ok(ApiResponsev1.success(rolService.listarRoles(), "Roles listados exitosamente"));
+=======
+    @GetMapping("/roles")
+    public ResponseEntity<GlobalResponse<List<Rol>>> listarRoles() {
+        return ResponseEntity.ok(GlobalResponse.success(rolService.listarRoles(), "Roles listados exitosamente"));
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 
-
-
-    // Buscar Roll por ID
-    @Operation(
-            summary = "Buscar rol por ID",
-            description = "Obtiene la información de un rol específico mediante su identificador."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Rol encontrado correctamente"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Rol no encontrado"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    // Buscar Rol por ID
+    @Operation(summary = "Buscar rol por ID", description = "Obtiene la informacion de un rol especifico mediante su identificador.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rol encontrado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Rol no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/roles/{idRol}")
+<<<<<<< HEAD
     public ResponseEntity<ApiResponsev1<Rol>> buscarRolPorId(
             @Parameter(description = "Nuevo rol del usuario", example = "2")
             @PathVariable Long idRol) {
         return ResponseEntity.ok(ApiResponsev1.success(rolService.buscarPorId(idRol), "Rol encontrado"));
+=======
+    public ResponseEntity<GlobalResponse<Rol>> buscarRolPorId(@Parameter(description = "Nuevo rol del usuario", example = "2") @PathVariable Long idRol) {
+        return ResponseEntity.ok(GlobalResponse.success(rolService.buscarPorId(idRol), "Rol encontrado"));
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 
-    // ─── Estados ──────────────────────────────────────────────────────────────
-
-
-    //Listar Usuarios ID
-    @Operation(
-            summary = "Listar estados de usuario",
-            description = "Retorna todos los estados disponibles para los usuarios."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Estados listados correctamente"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    // Listar Estados
+    @Operation(summary = "Listar estados de usuario", description = "Retorna todos los estados disponibles para los usuarios.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estados listados correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/estados")
+<<<<<<< HEAD
     public ResponseEntity<ApiResponsev1<List<EstadoUsuario>>> listarEstados() {
         return ResponseEntity
                 .ok(ApiResponsev1.success(estadoUsuarioService.listarEstados(), "Estados listados exitosamente"));
+=======
+    public ResponseEntity<GlobalResponse<List<EstadoUsuario>>> listarEstados() {
+        return ResponseEntity.ok(GlobalResponse.success(estadoUsuarioService.listarEstados(), "Estados listados exitosamente"));
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 
-
     // Buscar Estado de Usuario por id
-    @Operation(
-            summary = "Buscar estado de usuario por ID",
-            description = "Obtiene la información de un estado de usuario específico mediante su identificador."
-    )
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Estado encontrado correctamente"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Estado no encontrado"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    @Operation(summary = "Buscar estado de usuario por ID", description = "Obtiene la informacion de un estado de usuario especifico mediante su identificador.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estado encontrado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Estado no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/estados/{idEstadoUsuario}")
+<<<<<<< HEAD
     public ResponseEntity<ApiResponsev1<EstadoUsuario>> buscarEstadoPorId(
             @Parameter(description = "Nuevo estado del usuario", example = "1")
             @PathVariable Long idEstadoUsuario) {
         return ResponseEntity.ok(ApiResponsev1.success(estadoUsuarioService.buscarPorId(idEstadoUsuario), "Estado encontrado"));
+=======
+    public ResponseEntity<GlobalResponse<EstadoUsuario>> buscarEstadoPorId(@Parameter(description = "Nuevo estado del usuario", example = "1") @PathVariable Long idEstadoUsuario) {
+        return ResponseEntity.ok(GlobalResponse.success(estadoUsuarioService.buscarPorId(idEstadoUsuario), "Estado encontrado"));
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
     }
 }

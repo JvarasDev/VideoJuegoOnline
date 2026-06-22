@@ -1,39 +1,16 @@
-# ─────────────────────────────────────────────────────────────
-#  Mapa de puertos del sistema
-#  ────────────────────────────────────────────────────
-#  Infraestructura
-#    config-server   : 8888
-#    eureka-server   : 8761
-#    api-gateway     : 8080
-#  ────────────────────────────────────────────────────
-#  Microservicios de dominio
-#    usuario-service   : 8081
-#    personaje-service : 8082
-#    arma-service      : 8083
-#    tienda-service    : 8084
-#    pago-service      : 8085
-#    inventario-service: 8086
-#    mision-service    : 8087
-#    ranking-service   : 8088
-#    combate-service   : 8089
-# ─────────────────────────────────────────────────────────────
-
 server:
   port: 8080
 
 spring:
   main:
-    # ✅ Declarar explícitamente modo reactivo (requerido por Spring Cloud Gateway WebFlux)
     web-application-type: reactive
 
   cloud:
     gateway:
-      # ✅ Timeouts globales — evitan thread pool exhaustion ante servicios lentos
       httpclient:
-        connect-timeout: 3000      # 3 segundos para establecer conexión
-        response-timeout: 10s      # 10 segundos para recibir respuesta
+        connect-timeout: 3000      
+        response-timeout: 10s      
 
-      # ✅ CORS global explícito — ajustar allowed-origins según el frontend
       globalcors:
         cors-configurations:
           '[/**]':

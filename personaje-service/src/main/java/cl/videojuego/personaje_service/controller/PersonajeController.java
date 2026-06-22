@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/personajes")
 @RequiredArgsConstructor
-@Tag(name = "Personajes", description = "Operaciones relacionadas con la gestión de personajes del videojuego")
+@Tag(name = "Personajes", description = "Operaciones relacionadas con la gestiÃƒÂ³n de personajes del videojuego")
 public class PersonajeController {
 
     private final PersonajeService personajeService;
@@ -50,11 +50,11 @@ public class PersonajeController {
 
     //Registar nuevo personaje
     @Operation(summary = "Registrar nuevo personaje",
-            description = "Permite crear un nuevo personaje asociado a un usuario existente. Antes de registrar, valida mediante OpenFeign que el usuario exista, no esté baneado, no esté suspendido y no sea administrador."
+            description = "Permite crear un nuevo personaje asociado a un usuario existente. Antes de registrar, valida mediante OpenFeign que el usuario exista, no estÃƒÂ© baneado, no estÃƒÂ© suspendido y no sea administrador."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Personaje registrado correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos enviados en la solicitud"),
+            @ApiResponse(responseCode = "400", description = "Datos invÃƒÂ¡lidos enviados en la solicitud"),
             @ApiResponse(responseCode = "404", description = "Usuario, clase o estado no encontrado"),
             @ApiResponse(responseCode = "409", description = "Usuario no apto para crear personaje"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
@@ -101,7 +101,7 @@ public class PersonajeController {
 
     // Listar personajes por Id de usuario
     @Operation(summary = "Listar personajes por usuario",
-               description = "Retorna todos los personajes asociados a un usuario específico."
+               description = "Retorna todos los personajes asociados a un usuario especÃƒÂ­fico."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Personajes del usuario listados correctamente"),
@@ -109,9 +109,15 @@ public class PersonajeController {
     })
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<PersonajeDTO>> listarPorUsuario(
+<<<<<<< HEAD
             @Parameter(description = "Identificador del usuario propietario de los personajes", example = "1")
             @PathVariable Long idUsuario
     ) {
+=======
+
+            @Parameter(description = "Identificador del usuario propietario de los personajes", example = "1")
+            @PathVariable Long idUsuario) {
+>>>>>>> a7c43fd2c70aa9e87c829e7285155016252c9d2f
         return ResponseEntity.ok(personajeService.listarPorUsuario(idUsuario));
     }
 
@@ -119,7 +125,7 @@ public class PersonajeController {
     //Listar personajes por nivel
     @Operation(
             summary = "Listar personajes por nivel",
-            description = "Retorna personajes filtrados por un nivel específico."
+            description = "Retorna personajes filtrados por un nivel especÃƒÂ­fico."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Personajes por nivel listados correctamente"),
@@ -176,7 +182,7 @@ public class PersonajeController {
     // Buscar personmaje por ID
     @Operation(
             summary = "Buscar personaje por ID",
-            description = "Permite obtener la información detallada de un personaje específico mediante su identificador."
+            description = "Permite obtener la informaciÃƒÂ³n detallada de un personaje especÃƒÂ­fico mediante su identificador."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Personaje encontrado correctamente"),
@@ -185,8 +191,10 @@ public class PersonajeController {
     })
     @GetMapping("/{idPersonaje}")
     public ResponseEntity<PersonajeDTO> buscarPorId(
-            @Parameter(description = "Identificador único del personaje", example = "1")
+            @Parameter(description = "Identificador ÃƒÂºnico del personaje", example = "1")
             @PathVariable Long idPersonaje) {
         return ResponseEntity.ok(personajeService.buscarPorId(idPersonaje));
     }
 }
+
+
