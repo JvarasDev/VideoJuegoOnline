@@ -1,46 +1,57 @@
-# VideoJuegoOnline — Plataforma Distribuidora de Microservicios Backend
+# Plataforma de Microservicios Distribuidos — VideoJuegoOnline
 
-[![Java Version](https://img.shields.io/badge/Java-21-orange.svg?style=flat-square&logo=openjdk)](https://openjdk.org/)
+[![Java Version](https://img.shields.io/badge/Java-21%20LTS-orange.svg?style=flat-square&logo=openjdk)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.x-brightgreen.svg?style=flat-square&logo=spring)](https://spring.io/projects/spring-boot)
 [![Docker Support](https://img.shields.io/badge/Docker-Enabled-blue.svg?style=flat-square&logo=docker)](https://www.docker.com/)
-[![Architecture](https://img.shields.io/badge/Architecture-Microservices-blueviolet.svg?style=flat-square)](#arquitectura)
-[![License](https://img.shields.io/badge/License-Proprietary-red.svg?style=flat-square)](#licencia)
+[![License](https://img.shields.io/badge/License-Proprietary%20Restricted-red.svg?style=flat-square)](#20-licencia)
+
+---
+
+## 1. Clasificación del Software
+* **Tipo de Componente:** Plataforma transaccional de misión crítica (Core Backend Platform).
+* **Arquitectura:** Arquitectura distribuida basada en microservicios desacoplados (Shared-Nothing Architecture).
+* **Público Objetivo:** Arquitectos de Software, Ingenieros de Backend, DevSecOps, SRE y Auditores de Cumplimiento.
 
 ---
 
 ## 2. Resumen Ejecutivo
+**VideoJuegoOnline** es una solución backend de grado empresarial diseñada para soportar el ecosistema operacional de un videojuego en línea multijugador masivo (MMORPG). El sistema provee un motor transaccional escalable, tolerante a fallos y altamente disponible para la administración del ciclo de vida del usuario, persistencia de inventarios, economía interna, emparejamiento, registro de misiones y cómputo de clasificaciones globales en tiempo real. 
 
-**VideoJuegoOnline** es una plataforma backend de grado empresarial diseñada bajo un enfoque de microservicios distribuidos para dar soporte a un ecosistema de videojuegos en línea (MMORPG/multijugador masivo). El sistema expone servicios desacoplados para la gestión del ciclo de vida del usuario, progresión de personajes, combate en tiempo real, inventarios compartidos, compras internas, ranking global y mecánicas de misiones. 
-
-La arquitectura prioriza la **alta disponibilidad**, el **aislamiento de datos por dominio**, la **seguridad perimetral** y el **despliegue local y en la nube 100% reproducible** mediante contenedores Docker y orquestación estructurada.
-
----
-
-## 3. Objetivos del Sistema
-
-*   **Desacoplamiento Operacional:** Aislar los dominios críticos (e.g., pagos y combate) para mitigar fallas en cascada.
-*   **Aislamiento Estricto de Persistencia:** Cada microservicio gestiona su propia base de datos relacional independiente bajo el principio de *Database-per-Service*.
-*   **Despliegue Homogéneo:** Garantizar que los entornos locales de desarrollo, preproducción y producción se comporten de manera idéntica mediante empaquetado inmutable.
-*   **Seguridad por Diseño (Secure by Design):** Minimizar la superficie de ataque de los contenedores utilizando imágenes base reducidas, privilegios no root y comunicación controlada por pasarela de API.
-*   **Observabilidad Centralizada:** Facilitar el diagnóstico rápido del estado de salud y métricas de desempeño de todos los servicios.
+La arquitectura implementa la segregación estricta de dominios de negocio y almacenamiento de datos (*Database-per-Service*), garantizando la resiliencia sistémica y mitigando riesgos de fallo en cascada bajo condiciones de carga extrema.
 
 ---
 
-## 4. Arquitectura
+## 3. Alcance Funcional
 
-La solución implementa un patrón de microservicios con soporte de **Spring Cloud** para el descubrimiento, la configuración y el enrutamiento:
+### Qué hace el sistema:
+* **Autenticación e Identidad:** Registro, actualización y control de estados/roles de cuentas de usuario mediante servicios perimetrales autenticados.
+* **Ciclo de Vida del Personaje:** Gestión de atributos físicos, progresión de niveles y asignación de equipamiento.
+* **Transacciones de Tienda e Inventario:** Operaciones atómicas de compra-venta de ítems y control transaccional del inventario de jugador.
+* **Motor de Combate:** Cómputo de estadísticas, resolución de encuentros y distribución de experiencia.
+* **Misiones y Recompensas:** Seguimiento dinámico de objetivos asignados y progresión de eventos del servidor.
+* **Ranking Global:** Cálculo y exposición de tablas de clasificación competitiva en tiempo real.
+
+### Qué NO hace el sistema:
+* **Renderizado Gráfico:** No procesa assets visuales, modelos 3D ni mecánicas de presentación visual (responsabilidad de clientes dedicados).
+* **Conexiones WebSocket Crudas Directas:** Las transmisiones de baja latencia no se gestionan sin autenticación previa y enrutamiento en la pasarela perimetral (API Gateway).
+* **Procesamiento de Pagos Externos Directos:** Delega el flujo financiero a pasarelas certificadas (PCI-DSS) a través de tokens de transacción seguros.
+
+---
+
+## 4. Arquitectura de Alto Nivel
+El sistema está estructurado bajo un patrón de microservicios distribuidos empleando **Spring Cloud** para control de infraestructura y **Docker/Docker Compose** para contenedorización y orquestación local:
 
 ```mermaid
 graph TD
-    Client[Clientes / Frontends] -->|HTTP/REST| GW[API Gateway :8080]
+    Client[Clientes y Consolas] -->|HTTPS / REST| GW[API Gateway - Puerto 8080]
     
-    subgraph Core Infra [Infraestructura de Soporte]
-        CS[Config Server :8888]
-        EU[Eureka Discovery :8761]
-        DB[(MySQL Cluster :3307)]
+    subgraph Soporte [Infraestructura de Soporte]
+        CS[Config Server - Puerto 8888]
+        EU[Eureka Discovery - Puerto 8761]
+        DB[(MySQL Cluster - Puerto 3307)]
     end
     
-    subgraph Domain Microservices [Microservicios de Dominio]
+    subgraph Dominios [Microservicios de Dominio]
         US[usuario-service]
         PS[personaje-service]
         AS[arma-service]
@@ -52,256 +63,407 @@ graph TD
         COS[combate-service]
     end
 
-    GW -->|Enruta & Balancea| DomainMicroservices
-    DomainMicroservices -->|Registro & Descubrimiento| EU
-    DomainMicroservices -->|Obtiene Propiedades| CS
-    DomainMicroservices -->|Persistencia Aislada| DB
+    GW -->|Enrutamiento Dinámico| Dominios
+    Dominios -->|Service Registry| EU
+    Dominios -->|Propiedades Centralizadas| CS
+    Dominios -->|Aislamiento de Persistencia| DB
 ```
 
-### Componentes Clave:
-1.  **API Gateway (`:8080`):** Punto único de entrada. Realiza enrutamiento dinámico, agregación de endpoints y control de accesos.
-2.  **Eureka Server (`:8761`):** Servidor de descubrimiento de servicios (Service Registry) que mantiene el mapa dinámico de instancias activas.
-3.  **Config Server (`:8888`):** Proveedor centralizado de propiedades dinámicas y variables de entorno externas, soportando perfiles locales e imágenes Docker.
-4.  **Servicios de Dominio:** Microservicios independientes construidos sobre Spring Boot 3 y Java 21, comunicándose internamente de forma asíncrona o vía HTTP REST orientada por Eureka.
+### Directrices Arquitectónicas Clave:
+1. **Configuración Externa (Externalized Configuration):** Los microservicios obtienen su configuración dinámicamente desde el `Config Server` según el perfil activo (`dev`, `docker`).
+2. **Descubrimiento Dinámico:** Eureka Server rastrea la topología de la red de contenedores, permitiendo el escalado horizontal elástico de instancias sin intervención manual en el Gateway.
+3. **Persistencia Aislada:** Cada microservicio cuenta con un esquema de base de datos MySQL específico. La integridad referencial entre dominios se mantiene a nivel lógico-aplicativo, nunca mediante llaves foráneas inter-base de datos.
 
 ---
 
 ## 5. Requisitos Previos
 
-Antes de compilar y desplegar la plataforma, asegúrese de contar con las siguientes herramientas instaladas y configuradas:
-
-*   **Java Development Kit (JDK):** Versión 21 LTS (se recomienda Eclipse Temurin).
-*   **Apache Maven:** Versión 3.9.x (o uso directo de los scripts autoinstalables `mvnw`).
-*   **Docker Engine:** Versión 24.0.0 o superior.
-*   **Docker Compose:** Versión v2.20.0 o superior (compatible con especificación V3.8+).
-*   **Git:** Para clonación y control de versiones.
+El entorno de ejecución y desarrollo requiere:
+* **Java SE Development Kit (JDK):** Versión 21 LTS (Distribución Eclipse Temurin recomendada).
+* **Apache Maven:** Versión 3.9.x o superior.
+* **Docker Engine:** Versión 24.0.0 o superior.
+* **Docker Compose:** Versión v2.20.0 o superior (compatible con especificación de archivos de composición 3.8+).
+* **Git:** Versión 2.40.0 o superior para control de versiones del monorrepo.
 
 ---
 
 ## 6. Estructura del Repositorio
 
-La disposición de los módulos del proyecto sigue un esquema monorrepo con la siguiente jerarquía:
+La jerarquía del proyecto sigue un esquema monorrepo estructurado por capas físicas y lógicas:
 
 ```text
 VideoJuegoOnline/
-├── .github/                     # Pipelines de CI/CD (GitHub Actions)
-├── config-server/               # Spring Cloud Config Server y propiedades centralizadas
-│   ├── config-microservicios/   # Archivos YAML de configuración externa
-│   └── Dockerfile
-├── eureka-server/               # Spring Cloud Eureka Discovery Server
-│   └── Dockerfile
-├── api-gateway/                 # Gateway de enrutamiento perimetral
-│   └── Dockerfile
-├── [microservicio]-service/     # Directorios correspondientes a los servicios de dominio
-│   ├── src/                     # Código fuente Java del microservicio
-│   ├── pom.xml                  # Descriptor de dependencias Maven
-│   └── Dockerfile               # Compilación multi-stage optimizada
-├── init-db/                     # Scripts SQL de inicialización para contenedores
-│   └── init.sql
-├── docker-compose.yml           # Declaración y orquestación local de servicios
-└── README.md                    # Documentación principal del sistema
+├── .github/                         # Workflows de integración y despliegue continuo (CI/CD)
+├── api-gateway/                     # Puerta de enlace perimetral (Spring Cloud Gateway)
+│   ├── src/                         # Código fuente del Gateway
+│   ├── Dockerfile                   # Build de producción optimizado para Gateway
+│   └── pom.xml                      # POM de Maven
+├── config-server/                   # Servidor de configuración centralizada
+│   ├── config-microservicios/       # Archivos de propiedades YAML por entorno
+│   ├── Dockerfile
+│   └── pom.xml
+├── eureka-server/                   # Servidor de registro y descubrimiento
+│   ├── Dockerfile
+│   └── pom.xml
+├── [microservicio]-service/         # Servicios de negocio (e.g., usuario-service, combate-service)
+│   ├── src/                         # Código fuente del servicio
+│   ├── Dockerfile                   # Compilación multi-stage y hardening
+│   └── pom.xml                      # Descriptor de dependencias Maven
+├── init-db/                         # Scripts de aprovisionamiento de base de datos
+│   └── init.sql                     # Creación de esquemas y seeding inicial
+├── docker-compose.yml               # Orquestación de contenedores locales
+└── README.md                        # Documentación técnica maestra del sistema
 ```
 
 ---
 
-## 7. Compilación y Ejecución
+## 7. Convenciones de Versionado
 
-### 7.1. Ejecución Local (Entorno de Desarrollo)
+El ciclo de lanzamiento cumple rigurosamente con los siguientes estándares:
+* **Versionado de Aplicación:** Se rige por **Semantic Versioning 2.0.0** (`MAJOR.MINOR.PATCH`).
+* **Tags de Docker:** Toda imagen generada debe etiquetarse con el formato `{SemVer}-{GitCommitHash}` (ejemplo: `1.0.0-a1b2c3d`). Queda estrictamente prohibido el uso de la etiqueta `latest` en entornos de staging y producción.
+* **Política de Actualizaciones:** Parches de seguridad (cambios en el tercer dígito) se despliegan automáticamente al pasar el pipeline de CI/CD. Cambios menores o mayores requieren aprobación en el comité de control de cambios (CAB).
 
-Para ejecutar cualquier servicio de manera local aislada apuntando a bases de datos locales:
+---
 
-1. Compile el módulo correspondiente:
-   ```bash
-   cd usuario-service
-   ./mvnw clean package -DskipTests
-   ```
-2. Ejecute el artefacto `.jar` especificando el perfil de desarrollo:
-   ```bash
-   java -jar target/usuario-service-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
-   ```
+## 8. Construcción (Build)
 
-### 7.2. Construcción de Imágenes Docker por Módulo
-
-Para construir manualmente la imagen Docker de un servicio individual empleando la optimización Multi-Stage:
+Para garantizar la reproducibilidad del artefacto, la compilación de la plataforma se realiza mediante Maven:
 
 ```bash
-docker build -t cl.videojuego/usuario-service:1.0.0 ./usuario-service
+# Compilar todos los módulos del monorrepo y saltar pruebas unitarias temporalmente
+mvn clean package -DskipTests
+
+# Ejecutar la suite completa de pruebas unitarias y de integración del proyecto
+mvn clean verify
 ```
 
-### 7.3. Despliegue Completo con Docker Compose
+Para generar las imágenes Docker de manera local utilizando el motor de compilación nativo:
 
-La forma recomendada para inicializar toda la topología de la plataforma es utilizar el archivo orquestador principal:
-
-1. **Compilar y levantar toda la pila en background:**
-   ```bash
-   docker compose up -d --build
-   ```
-2. **Verificar el estado operacional de los contenedores:**
-   ```bash
-   docker compose ps
-   ```
-3. **Detener y limpiar los recursos de red locales:**
-   ```bash
-   docker compose down
-   ```
-
-> [!NOTE]
-> La directiva `depends_on` con la condición `service_healthy` garantiza que los microservicios arranquen en la secuencia correcta: primero la base de datos `mysql`, luego el `config-server`, seguido de `eureka-server` y `api-gateway`, y finalmente los servicios de negocio.
+```bash
+# Compilar la imagen de un microservicio específico
+docker build \
+  --build-arg JAR_FILE=target/usuario-service-0.0.1-SNAPSHOT.jar \
+  -t cl.videojuego/usuario-service:1.0.0-dev \
+  ./usuario-service
+```
 
 ---
 
-## 8. Configuración y Variables de Entorno
+## 9. Ejecución Local
 
-El sistema se apoya en perfiles de Spring (`dev`, `docker`, `native`) para desacoplar el entorno físico de la lógica de negocio.
+### 9.1. Ejecución Mediante JAR Nativo
+Recomendado para depuración rápida de código fuente en local:
 
-### 8.1. Perfiles de Configuración
-*   **`dev` / `default`:** Utilizado para arranques nativos en la máquina del desarrollador (`localhost`).
-*   **`docker`:** Configuración inyectada de manera predeterminada en los contenedores. Utiliza DNS de Docker para apuntar a servicios (`http://eureka-server:8761`).
+```bash
+# Exportar las propiedades necesarias
+export SPRING_PROFILES_ACTIVE=dev
+export CONFIG_SERVER_URL=http://localhost:8888
 
-### 8.2. Variables de Entorno Requeridas
+# Ejecutar el servicio
+java -jar usuario-service/target/usuario-service-0.0.1-SNAPSHOT.jar
+```
 
-| Variable de Entorno | Valor por Defecto | Descripción |
-| :--- | :--- | :--- |
-| `SPRING_PROFILES_ACTIVE` | `default` | Define las propiedades activas de configuración de Spring. |
-| `CONFIG_SERVER_URL` | `http://localhost:8888` | Endpoint base para obtener la configuración centralizada. |
-| `MYSQL_ROOT_PASSWORD` | `root` | Contraseña administrativa del motor de base de datos de desarrollo. |
-| `MYSQL_USER` | `videojuego` | Usuario principal de base de datos con permisos sobre los esquemas. |
-| `MYSQL_PASSWORD` | `videojuego` | Contraseña del usuario principal. |
-| `DB_NAME` | *(Varía por servicio)* | Nombre de la base de datos a la que se conectará el microservicio. |
+### 9.2. Ejecución Completa Mediante Docker Compose
+Este es el mecanismo preferido para levantar toda la topología del sistema de forma idéntica a producción:
 
----
+```bash
+# Construir imágenes y levantar servicios en segundo plano
+docker compose up -d --build
 
-## 9. Catálogo de Servicios y Endpoints
+# Monitorear estado operacional de la red de contenedores
+docker compose ps
 
-A través del **API Gateway (`:8080`)** se puede acceder de forma centralizada a los endpoints expuestos por los microservicios de dominio:
-
-| Microservicio | Puerto Interno | Prefijo en Gateway (`/api/v1/...`) | Endpoint de Salud (Health Check) |
-| :--- | :---: | :--- | :--- |
-| **API Gateway** | `8080` | `/` | `http://localhost:8080/actuator/health` |
-| **Config Server** | `8888` | *N/A* | `http://localhost:8888/actuator/health` |
-| **Eureka Server** | `8761` | *N/A* | `http://localhost:8761/actuator/health` |
-| **usuario-service** | Dynamic | `/usuarios/**` | `http://localhost:8080/api/v1/usuarios/actuator/health` |
-| **personaje-service**| Dynamic | `/personajes/**` | `http://localhost:8080/api/v1/personajes/actuator/health` |
-| **arma-service** | Dynamic | `/armas/**` | `http://localhost:8080/api/v1/armas/actuator/health` |
-| **tienda-service** | Dynamic | `/tiendas/**` | `http://localhost:8080/api/v1/tiendas/actuator/health` |
-| **pago-service** | Dynamic | `/pagos/**` | `http://localhost:8080/api/v1/pagos/actuator/health` |
-| **inventario-service**| Dynamic | `/inventarios/**` | `http://localhost:8080/api/v1/inventarios/actuator/health` |
-| **mision-service** | Dynamic | `/misiones/**` | `http://localhost:8080/api/v1/misiones/actuator/health` |
-| **ranking-service** | Dynamic | `/rankings/**` | `http://localhost:8080/api/v1/rankings/actuator/health` |
-| **combate-service** | Dynamic | `/combates/**` | `http://localhost:8080/api/v1/combates/actuator/health` |
+# Detener los servicios y remover redes creadas
+docker compose down
+```
 
 ---
 
-## 10. Seguridad y Hardening en Contenedores
+## 10. Configuración y Entorno
 
-Para cumplir con estándares modernos de ciberseguridad en entornos de producción (similares a lineamientos de CIS Benchmarks), las imágenes de contenedor de este repositorio aplican estrictas medidas de mitigación:
+El comportamiento del runtime se configura exclusivamente mediante variables de entorno. Los archivos `application.yml` internos no deben almacenar contraseñas ni llaves simétricas.
 
-### 10.1. Estrategia Multi-Stage en Dockerfile
-Separamos el entorno de compilación (JDK completo) de la imagen de tiempo de ejecución (JRE mínimo libre de compiladores y herramientas innecesarias), reduciendo drásticamente la superficie de ataque explotable.
+| Variable de Entorno | Valor por Defecto | Descripción | Perfil Requerido |
+| :--- | :--- | :--- | :--- |
+| `SPRING_PROFILES_ACTIVE` | `dev` | Define la configuración activa (`dev`, `docker`, `prod`). | Todos |
+| `CONFIG_SERVER_URL` | `http://localhost:8888` | URL de acceso al servidor de configuraciones. | Todos |
+| `MYSQL_HOST` | `localhost` | Nombre de host o IP de la base de datos relacional. | `dev`, `docker` |
+| `MYSQL_PORT` | `3306` | Puerto de escucha de la base de datos MySQL. | Todos |
+| `MYSQL_USER` | `videojuego` | Usuario con permisos DDL y DML sobre el esquema. | Todos |
+| `MYSQL_PASSWORD` | *(Obligatorio)* | Contraseña cifrada del usuario de la base de datos. | Todos |
+| `JVM_OPTS` | `-XX:MaxRAMPercentage=75.0` | Parámetros de ajuste de memoria de la JVM en contenedores. | `prod` |
+
+---
+
+## 11. Dockerfile Recomendado (Producción)
+
+Este Dockerfile implementa una arquitectura **Multi-stage** para aislar el entorno de compilación, inyectar un usuario sin privilegios y asegurar la inmutabilidad del contenedor en tiempo de ejecución:
 
 ```dockerfile
-# =============================================================
-# STAGE 1 — BUILD (Utiliza JDK completo para compilar)
-# =============================================================
+# ==========================================
+# Fase 1: Compilación (Build Stage)
+# ==========================================
 FROM eclipse-temurin:21-jdk-alpine AS builder
-WORKDIR /app
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw
-# Cachear dependencias para agilizar builds subsiguientes
-RUN --mount=type=cache,target=/root/.m2/repository ./mvnw dependency:go-offline -B
-COPY src ./src
-RUN --mount=type=cache,target=/root/.m2/repository ./mvnw package -DskipTests -B
+WORKDIR /build
 
-# =============================================================
-# STAGE 2 — RUNTIME (Imagen mínima y segura)
-# =============================================================
+# Copiar descriptores de dependencias para caching de capas
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
+COPY usuario-service/pom.xml usuario-service/
+COPY usuario-service/src usuario-service/src
+
+# Compilar proyecto optimizando caché de dependencias Maven
+RUN chmod +x mvnw
+RUN --mount=type=cache,target=/root/.m2 ./mvnw -pl usuario-service clean package -DskipTests -B
+
+# ==========================================
+# Fase 2: Tiempo de Ejecución (Runtime Stage)
+# ==========================================
 FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app
 
-# Inyección de usuario no-root por seguridad
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup && apk add --no-cache wget
+# Hardening: Creación de usuario no privilegiado (UID/GID 10001)
+RUN addgroup -S -g 10001 appgroup && \
+    adduser -S -u 10001 -G appgroup -h /app appuser
 
-COPY --from=builder /app/target/*.jar app.jar
-RUN chown appuser:appgroup app.jar
+# Copiar el artefacto final compilado desde la fase anterior
+COPY --from=builder /build/usuario-service/target/*.jar app.jar
 
-# Cambiar contexto al usuario sin privilegios root
+# Configurar permisos de lectura y ejecución restringidos
+RUN chown -R appuser:appgroup /app && \
+    chmod 500 /app/app.jar
+
+# Cambiar contexto de ejecución al usuario no privilegiado
 USER appuser
+
+# Exposición explícita de puerto
 EXPOSE 8080
 
-# Health check local para monitoreo SRE
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD wget -qO- http://localhost:8080/actuator/health | grep -q '"status":"UP"' || exit 1
-
+# Parámetros óptimos de JVM para contenedores
 ENTRYPOINT ["java", \
-  "-XX:+UseContainerSupport", \
-  "-XX:MaxRAMPercentage=75.0", \
-  "-Djava.security.egd=file:/dev/./urandom", \
-  "-jar", "app.jar"]
+            "-XX:+UseContainerSupport", \
+            "-XX:MaxRAMPercentage=75.0", \
+            "-XX:+ExitOnOutOfMemoryError", \
+            "-Djava.security.egd=file:/dev/./urandom", \
+            "-jar", \
+            "app.jar"]
 ```
 
-### 10.2. Directrices de Producción
-*   **Prohibición de Etiquetas `latest`:** En producción, defina siempre tags inmutables asociados al hash del commit de Git (ej. `v1.2.3-a8f9cd`).
-*   **Privilegios de Contenedor:** Los contenedores se configuran explícitamente con `readOnlyRootFilesystem: true` en entornos K8s, direccionando los directorios de escritura temporales a `/tmp` (configurado como `emptyDir`).
-*   **Escaneo de Vulnerabilidades (CVEs):** Como parte del pipeline de CI/CD, las imágenes son escaneadas por herramientas estáticas y dinámicas como **Trivy** o **Grype**:
-    ```bash
-    trivy image --severity HIGH,CRITICAL cl.videojuego/usuario-service:1.0.0
-    ```
-
 ---
 
-## 11. Observabilidad y Monitoreo
+## 12. Docker Compose Recomendado (Orquestación Local)
 
-*   **Puntos de Control de Salud:** Todos los microservicios exponen el módulo `spring-boot-starter-actuator` en el path `/actuator/health` para proveer retroalimentación en tiempo real a Kubernetes o el motor de orquestación.
-*   **Logs Estructurados:** Los logs de aplicación se generan con formato estructurado compatible con agregadores (como ELK Stack, Splunk o Datadog) para garantizar trazabilidad distribuida sin degradar el rendimiento de E/S.
-*   **Métricas de Rendimiento:** Exposición de métricas críticas de JVM, recolección de basura e hilos del pool a través de la integración nativa de **Prometheus** (`/actuator/prometheus`).
+```yaml
+version: '3.8'
 
----
+networks:
+  videojuego-network:
+    driver: bridge
 
-## 12. Ciclo de Despliegue (Estrategia Multientorno)
+volumes:
+  mysql-data:
+    driver: local
 
-```mermaid
-graph LR
-    Dev[Entorno Local / Dev] -->|Git Push| CI[Integración Continua]
-    CI -->|Trivy / Unit Tests| Registry[Docker Container Registry]
-    Registry -->|CD Trigger| Staging[Ambiente Staging]
-    Staging -->|Aprobación Manual| Prod[Kubernetes Prod Cluster]
+services:
+  database:
+    image: mysql:8.0.33
+    container_name: videojuego-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_security_pass
+      MYSQL_DATABASE: db_usuarios
+      MYSQL_USER: videojuego
+      MYSQL_PASSWORD: secure_user_pass
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - videojuego-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "videojuego", "-psecure_user_pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  config-server:
+    build: ./config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+    networks:
+      - videojuego-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_URL=http://config-server:8888
+    depends_on:
+      config-server:
+        condition: service_healthy
+    networks:
+      - videojuego-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  usuario-service:
+    build: ./usuario-service
+    container_name: usuario-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_URL=http://config-server:8888
+      - MYSQL_HOST=database
+      - MYSQL_PORT=3306
+      - MYSQL_USER=videojuego
+      - MYSQL_PASSWORD=secure_user_pass
+    depends_on:
+      database:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - videojuego-network
 ```
 
-### 1. Desarrollo (`dev`)
-*   **Objetivo:** Iteración rápida.
-*   **Despliegue:** Arranque manual o mediante Docker Compose local. Base de datos expuesta al host.
+---
 
-### 2. Pruebas / Staging (`staging`)
-*   **Objetivo:** Integración y QA.
-*   **Despliegue:** GitOps automatizado mediante Kubernetes. Se despliegan imágenes compiladas en la rama `develop`.
+## 13. Salud y Observabilidad
 
-### 3. Producción (`prod`)
-*   **Objetivo:** Disponibilidad comercial y escalabilidad global.
-*   **Despliegue:** Orquestación en Kubernetes mediante archivos de manifiesto YAML configurados con Helm. Restricciones rigurosas de red (Network Policies) y autoescalado activado en base al consumo de CPU y memoria (HPA).
+Para soportar las operaciones del centro de operaciones (NOC) y los ingenieros SRE, la plataforma implementa una estrategia de monitoreo de tres pilares:
+
+### 1. Monitoreo de Salud (Health Checks)
+Cada servicio expone endpoints estándar de salud:
+* **Liveness Probe:** `/actuator/health/liveness` (indica si la JVM requiere reinicio).
+* **Readiness Probe:** `/actuator/health/readiness` (indica si el microservicio está listo para recibir tráfico, evaluando conexiones a bases de datos y Eureka).
+
+### 2. Logs Estructurados
+Los archivos de configuración de logs (`logback-spring.xml`) inyectan la salida estándar en formato JSON structured logging, lo que facilita el parseo mediante colectores de logs (FluentBit, Logstash):
+```json
+{"timestamp":"2026-06-23T14:30:15.123Z","level":"INFO","thread":"http-nio-8080-exec-1","logger":"cl.videojuego.usuario_service.service.UsuarioService","message":"Usuario registrado exitosamente","userId":1092,"traceId":"4f8a9e6b7c2d1e0f"}
+```
+
+### 3. Métricas
+Se exponen métricas en formato Prometheus en `/actuator/prometheus` recopilando:
+* Uso de CPU del contenedor.
+* Métricas de Garbage Collection (GC) y consumo de Heap Memory.
+* Tamaño y uso del pool de conexiones HikariCP.
 
 ---
 
-## 13. Resolución de Problemas (Troubleshooting)
+## 14. Catálogo de Interfaces y Endpoints
 
-### 13.1. Error: `Connection refused` al arrancar un microservicio
-*   **Causa:** La base de datos MySQL aún no se encuentra lista para aceptar conexiones entrantes durante el encendido inicial del contenedor.
-*   **Resolución:** Verifique que el script de inicialización (`init-db/init.sql`) no tenga errores sintácticos y que el contenedor `mysql` muestre el estado `healthy` (`docker compose ps`).
+A través de la pasarela de API Gateway (`:8080`), se expone el siguiente catálogo de endpoints:
 
-### 13.2. Error: Los microservicios no aparecen registrados en Eureka Dashboard
-*   **Causa:** El perfil de configuración inyectado no corresponde al entorno o el contenedor de Eureka está incomunicado en la red virtual.
-*   **Resolución:** Revise los logs del microservicio y confirme que la variable `CONFIG_SERVER_URL` apunte correctamente al contenedor de configuración. Asegúrese de que todos los contenedores pertenezcan a la red `videojuegos-net`.
-    ```bash
-    docker compose logs usuario-service | grep "Eureka"
-    ```
-
-### 13.3. Advertencia de consumo de memoria excesivo en Docker local
-*   **Causa:** El recolector de basura de Java y los límites por defecto del JVM pueden consumir más RAM de la necesaria si no se restringen.
-*   **Resolución:** Asegúrese de mantener el flag `-XX:MaxRAMPercentage=75.0` en los entrypoints de producción para coordinar la memoria del contenedor con el límite impuesto por Docker o Kubernetes.
+| Método | Ruta Relativa | Propósito | Autenticación | Estado Esperado |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/api/usuarios` | Listar todos los usuarios del sistema | Requerida (Admin) | `200 OK` |
+| `GET` | `/api/usuarios/{id}` | Buscar un usuario mediante su identificador único | Requerida (Usuario) | `200 OK` / `404 Not Found` |
+| `POST` | `/api/usuarios` | Registro de un nuevo usuario en la plataforma | Pública | `201 Created` / `400 Bad Request` |
+| `PUT` | `/api/usuarios/{id}` | Actualización de perfil del usuario | Requerida (Usuario) | `200 OK` / `400 Bad Request` |
+| `DELETE` | `/api/usuarios/{id}` | Eliminación (lógica o física) del registro del usuario | Requerida (Admin) | `200 OK` / `404 Not Found` |
 
 ---
 
-## 14. Licencia
+## 15. Seguridad y Hardening de la Plataforma
 
-Este software se distribuye bajo términos de **Licencia Comercial Restringida y Propietaria**. Queda prohibida la reproducción, modificación o distribución no autorizada de estos fuentes sin el consentimiento expreso del departamento de TI de la organización.
-Para términos de licencias de dependencias externas, consulte los archivos `pom.xml` correspondientes.
+Este microservicio se adhiere a las prácticas recomendadas de los estándares **OWASP Top 10** y las guías de ciberseguridad corporativa:
+
+1. **Aislamiento del Entorno de Compilación:** Uso de imágenes Multi-Stage para descartar compiladores (compiladores de Java, depuradores) de la imagen final que corre en producción.
+2. **Ejecución No-Root:** Configuración explícita de UID y GID en 10001. Esto evita que el contenedor obtenga privilegios del Kernel en caso de una vulnerabilidad de escape de contenedor (*container breakout*).
+3. **Control Estricto de Secretos:** Queda terminantemente prohibido almacenar contraseñas, llaves SSH o API tokens en archivos `application.yml` o en el repositorio Git. Todos los secretos se inyectan a través de variables de entorno seguras manejadas por HashiCorp Vault en producción.
+4. **Análisis de Vulnerabilidades (Static Analysis):** Cada imagen debe pasar un escaneo estático contra la base de datos de CVEs de Trivy antes de ser promovida en el registro:
+   ```bash
+   trivy image --exit-code 1 --severity HIGH,CRITICAL cl.videojuego/usuario-service:1.0.0
+   ```
+5. **Entrada de Datos Sanitizada:** Uso sistemático de anotaciones Jakarta Validation (`@NotBlank`, `@Email`, `@Size`) para prevenir inyecciones SQL, Cross-Site Scripting (XSS) y overflows de entrada de payloads.
+
+---
+
+## 16. Operación y Despliegue (Pipeline Promoción)
+
+El ciclo de despliegue sigue una estrategia estructurada de GitOps para garantizar la consistencia entre entornos físicos:
+
+```text
+[Rama dev]  ────────> Compilación local y pruebas unitarias rápidas.
+     │ (Merge Request)
+     ▼
++[Rama staging] ──────> CI/CD automatizado, tests de integración y escaneo Trivy. Despliegue en K8s Staging.
+     │ (Aprobación del CAB / Manual Trigger)
+     ▼
++[Rama main]  ────────> Empaquetado inmutable del artefacto, firma digital de imagen y despliegue en K8s Prod.
+```
+
+### Directrices de Despliegue:
+* **Entornos de Staging y Producción:** El despliegue se gestiona exclusivamente a través de plantillas Helm y manifiestos declarativos en Kubernetes.
+* **Políticas de Despliegue:** Se aplican estrategias de despliegue progresivo (Rolling Updates) con un máximo de 25% de instancias fuera de servicio simultáneas durante la actualización de versiones.
+
+---
+
+## 17. Edición y Resolución de Problemas (Troubleshooting)
+
+### 1. Error: `HikariPool-1 - Connection is not available, request timed out`
+* **Causa:** La base de datos asociada ha excedido su límite de conexiones simultáneas, o bien hay consultas bloqueantes lentas manteniendo conexiones activas.
+* **Resolución:** Aumente el pool de conexiones en la variable `SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE` (default es 10) o revise el estado de las transacciones mediante un comando SQL administrativo (`SHOW PROCESSLIST;`).
+
+### 2. Error: `Eureka Server communication failure`
+* **Causa:** El contenedor del microservicio no puede resolver la dirección de red del Eureka Discovery Server debido a una configuración errónea en `eureka.client.serviceUrl.defaultZone`.
+* **Resolución:** Verifique que el microservicio esté en la misma red Docker que Eureka (`videojuego-network`) y que el hostname resuelva correctamente mediante pruebas de conectividad básica (`ping eureka-server`).
+
+### 3. Error: `OutOfMemoryError: Java heap space` en contenedor Docker
+* **Causa:** La JVM no detecta los límites impuestos por el contenedor Docker y consume memoria del host superior a la permitida, provocando que el kernel del sistema operativo mate el proceso (OOM Killer).
+* **Resolución:** Asegúrese de que el ENTRYPOINT del Dockerfile mantenga la directiva `-XX:+UseContainerSupport` y configure `-XX:MaxRAMPercentage` en un valor no mayor a `75.0`.
+
+---
+
+## 18. Matriz de Compatibilidad
+
+| Componente / Tecnología | Versión Soportada | Estado de Soporte |
+| :--- | :--- | :--- |
+| **Java Platform** | OpenJDK 21 LTS | Certificado (Producción) |
+| **Spring Boot Framework** | 3.2.x | Certificado (Producción) |
+| **Spring Cloud** | 2023.0.x (Leyton) | Certificado (Producción) |
+| **Docker Engine** | 24.0.0+ | Compatible |
+| **Kubernetes Engine (EKS/GKE)** | 1.27+ | Certificado (Producción) |
+| **MySQL Database** | 8.0.x | Certificado (Producción) |
+
+---
+
+## 19. Gobernanza del Software y Soporte
+* **Responsable Técnico:** Departamento de Arquitectura de Plataforma e Infraestructura.
+* **Contacto de Soporte Técnico:** `arquitectura-ti@videojuego-online.internal` (canal exclusivo para ingenieros autorizados).
+* **Trazabilidad:** Cada cambio o modificación del sistema es registrado con firmas criptográficas asociadas a los commits de los ingenieros en el repositorio institucional.
+
+---
+
+## 20. Licencia
+
+### LICENCIA DE USO COMERCIAL RESTRINGIDA Y PROPIETARIA
+
+**AVISO LEGAL DE CONFIDENCIALIDAD Y RESTRICCIÓN DE USO**
+
+Este software, incluyendo todo su código fuente, documentación técnica, bibliotecas asociadas y esquemas de base de datos, es propiedad intelectual exclusiva de la entidad titular de los derechos de autor ("El Propietario"). Este software es propietario y confidencial.
+
+Queda estrictamente prohibida cualquier acción que involucre:
+1. La reproducción, copia, distribución, comunicación pública o puesta a disposición de terceros de este software, ya sea de forma total o parcial, en cualquier medio físico o digital, sin la autorización previa, expresa y por escrito de los representantes legales autorizados de El Propietario.
+2. La modificación, adaptación, traducción, descompilación, ingeniería inversa o creación de obras derivadas basadas en este código, excepto en la medida en que la legislación aplicable lo permita imperativamente.
+3. El sublicenciamiento o comercialización del software sin un contrato mercantil vigente firmado con El Propietario.
+
+El acceso no autorizado o el uso fuera de los términos de la licencia específica no transfiere bajo ningún concepto la titularidad de los derechos de propiedad intelectual del software, los cuales permanecen enteramente reservados a El Propietario. El incumplimiento de estos términos facultará a El Propietario a ejercer las acciones legales civiles y penales correspondientes de acuerdo con la legislación de protección de derechos de autor y propiedad intelectual aplicable.
+
+*(C) 2026. Todos los derechos reservados.*
