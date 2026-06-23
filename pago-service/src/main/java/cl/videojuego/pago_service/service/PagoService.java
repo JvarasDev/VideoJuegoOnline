@@ -61,6 +61,7 @@ public class PagoService {
                 .map(this::resolverDTO)
                 .toList();
     }
+
     public PagoDTO buscarPorId(Long idPago) {
         return pagoRepository.findById(idPago)
                 .map(this::resolverDTO)
@@ -92,5 +93,31 @@ public class PagoService {
         pago.setEstadoPago(estadoPago);
 
         return resolverDTO(pagoRepository.save(pago));
+    }
+
+    public ComprobanteDTO generarComprobante(Long idPago) {
+        Pago pago = pagoRepository.findById(idPago)
+                .orElseThrow(() -> new PagoNotFoundException(idPago));
+
+        UsuarioDTO usuario = usuarioClient.buscarUsuarioPorId(pago.getIdUsuario());
+        ProductoTiendaDTO producto = productoClient.buscarProductoPorId(pago.getIdProducto());
+
+        return ComprobanteDTO.builder()
+                .idPago(pago.getIdPago())
+                .montoPagado(pago.getMonto())
+                .fechaPago(pago.getFechaPago())
+                .codigoTransaccion(pago.getCodigoTransaccion())
+                .metodoPago(pago.getMetodoPago().getNombreMetodo())
+                .estadoPago(pago.getEstadoPago().getNombreEstado())
+                .idUsuario(usuario.getIdUsuario())
+                .nombreCliente(usuario.getNombre() + " " + usuario.getApellido())
+                .correoCliente(usuario.getCorreo())
+                .nivelCuenta(usuario.getNivelCuenta())
+                .idProducto(producto.getIdProducto())
+                .nombreProducto(producto.getNombreProducto())
+                .descripcionProducto(producto.getDescripcion())
+                .categoriaProducto(producto.getNombreCategoria())
+                
+                .build();
     }
 }

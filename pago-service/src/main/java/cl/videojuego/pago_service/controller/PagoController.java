@@ -2,6 +2,7 @@ package cl.videojuego.pago_service.controller;
 
 import cl.videojuego.pago_service.dto.PagoDTO;
 import cl.videojuego.pago_service.dto.PagoRegistroDTO;
+import cl.videojuego.pago_service.dto.ComprobanteDTO;
 import cl.videojuego.pago_service.service.PagoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -201,5 +202,32 @@ public class PagoController {
             @PathVariable Long idEstadoPago
     ) {
         return ResponseEntity.ok(pagoService.listarPorEstado(idEstadoPago));
+    }
+
+    @Operation(
+            summary = "Generar comprobante de pago",
+            description = "Retorna un comprobante detallado con la información completa del pago, del usuario comprador y del producto."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Comprobante generado correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ComprobanteDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Pago no encontrado",
+                    content = @Content
+            )
+    })
+    @GetMapping("/{idPago}/comprobante")
+    public ResponseEntity<ComprobanteDTO> generarComprobante(
+            @Parameter(description = "Identificador único del pago", example = "1")
+            @PathVariable Long idPago
+    ) {
+        return ResponseEntity.ok(pagoService.generarComprobante(idPago));
     }
 }
