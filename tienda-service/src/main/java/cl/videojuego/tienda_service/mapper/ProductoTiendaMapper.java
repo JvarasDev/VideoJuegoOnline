@@ -6,6 +6,7 @@ import cl.videojuego.tienda_service.dto.ProductoTiendaRegistroDTO;
 import cl.videojuego.tienda_service.model.CategoriaProducto;
 import cl.videojuego.tienda_service.model.EstadoProducto;
 import cl.videojuego.tienda_service.model.ProductoTienda;
+import cl.videojuego.tienda_service.model.TipoItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -26,5 +27,5 @@ public interface ProductoTiendaMapper {
         @Mapping(target = "tipoItem", source = "tipo")
         @Mapping(target = "categoriaProducto", source = "categoria")
         @Mapping(target = "estadoProducto", source = "estado")
-        ProductoTienda toEntity(ProductoTiendaRegistroDTO dto, CategoriaProducto categoria, EstadoProducto estado, cl.videojuego.tienda_service.model.TipoItem tipo);
+        ProductoTienda toEntity(ProductoTiendaRegistroDTO dto, CategoriaProducto categoria, EstadoProducto estado, TipoItem tipo);
 }
