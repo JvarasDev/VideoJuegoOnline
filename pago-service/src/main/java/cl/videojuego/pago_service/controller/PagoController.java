@@ -4,6 +4,7 @@ import cl.videojuego.pago_service.dto.PagoDTO;
 import cl.videojuego.pago_service.dto.PagoRegistroDTO;
 import cl.videojuego.pago_service.dto.ComprobanteDTO;
 import cl.videojuego.pago_service.service.PagoService;
+import cl.videojuego.pago_service.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -17,7 +18,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +45,6 @@ public class PagoController {
                             mediaType = "application/json",
                             array = @ArraySchema(
                                     schema = @Schema(implementation = PagoDTO.class)
-
                             )
                     )
             ),
@@ -76,68 +75,75 @@ public class PagoController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Datos inválidos enviados en la solicitud",
-                    content = @Content(mediaType = "application/json",
-                            schema =  @Schema(implementation = ErrorResponse.class),
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     value = """
-            {
-               "status": 400,
-                "error": " Solicitud inválida",
-                "message": "El campo 'monto' es obligatorio y no puede estar vacío.",
-                "timestamp": "2026-06-24T03:19:26.664795327"
-            }
-            """
-
-                            ) )
-
-
-
-
+                                    {
+                                       "status": 400,
+                                        "error": "Solicitud inválida",
+                                        "message": "El campo 'monto' es obligatorio y no puede estar vacío.",
+                                        "timestamp": "2026-06-24T03:19:26.664795327"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Usuario, producto, método de pago o estado no encontrado",
                     content = @Content(
                             mediaType = "application/json",
-                            schema =  @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = """
-            {
-               "status": 404,
-                "error": " No encontrado",
-                "message": "Pago no encontrado con ID:100",
-                "timestamp": "2026-06-24T03:19:26.664795327"
-            }
-            """
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                       "status": 404,
+                                        "error": "No encontrado",
+                                        "message": "Pago no encontrado con ID:100",
+                                        "timestamp": "2026-06-24T03:19:26.664795327"
+                                    }
+                                    """
                             )
                     )
-
             ),
             @ApiResponse(
                     responseCode = "409",
                     description = "Stock insuficiente para realizar la compra",
-                    content = @Content
-
-
-
-
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 409,
+                                      "error": "Conflict",
+                                      "message": "Stock insuficiente para realizar la compra",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
                     content = @Content(
                             mediaType = "application/json",
-                            schema =  @Schema(implementation = ErrorResponse.class),
+                            schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(
                                     value = """
-            {
-              "status": 500,
-               "error": "ERROR INTERNO DEL SISTEMA, CAPA 8",
-               "message": "error inesperado T_T",
-               "timestamp": "2026-06-24T02:26:31.0983806"
-            }
-            """
+                                    {
+                                      "status": 500,
+                                       "error": "ERROR INTERNO DEL SISTEMA, CAPA 8",
+                                       "message": "error inesperado T_T",
+                                       "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
                     )
-            ))
+            )
     })
     @PostMapping
     public ResponseEntity<PagoDTO> registrar(
@@ -158,8 +164,7 @@ public class PagoController {
                     description = "Pago encontrado correctamente",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = PagoDTO.class),
-
+                            schema = @Schema(implementation = PagoDTO.class)
                     )
             ),
             @ApiResponse(
