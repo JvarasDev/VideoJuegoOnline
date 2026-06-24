@@ -7,6 +7,74 @@
 
 ---
 
+## Documento Guía (Evaluación 3)
+
+### Contexto
+* **Dominio del problema:** La necesidad de gestionar de forma transaccional, escalable y tolerante a fallos el ecosistema completo de un videojuego en línea multijugador masivo (MMORPG). Esto implica procesar el ciclo de vida de jugadores, inventarios, combates, misiones, economía interna y clasificaciones en tiempo real.
+* **Solución del proyecto:** Una arquitectura distribuida de microservicios desarrollada con Java 21, Spring Boot y Spring Cloud. Cada dominio de negocio (e.g., Combate, Inventario, Usuario) está aislado con su propio esquema de base de datos MySQL (Database-per-Service). Todo el tráfico externo no ingresa directamente a los servicios, sino que es orquestado, filtrado y enrutado de forma centralizada y segura a través de un API Gateway.
+
+### Créditos
+* **Integrantes del equipo:** Juan Varas *(Modificar si existen más integrantes)*
+
+### Arquitectura
+El sistema implementa 12 microservicios en total, divididos en dos capas:
+* **Microservicios de Infraestructura (3):**
+  * `eureka-server`: Servidor de registro y descubrimiento de instancias.
+  * `config-server`: Servidor de configuración centralizada por perfiles.
+  * `api-gateway`: Pasarela perimetral (puerto 8080).
+* **Microservicios de Dominio de Negocio (9):**
+  * `usuario-service`: Gestión de cuentas, perfiles y autenticación.
+  * `personaje-service`: Gestión de atributos, niveles y clases de personajes.
+  * `arma-service`: Catálogo y características del armamento.
+  * `tienda-service`: Comercio in-game (compras y ventas).
+  * `pago-service`: Procesamiento transaccional de pagos.
+  * `inventario-service`: Almacenamiento seguro de pertenencias del jugador.
+  * `mision-service`: Asignación, seguimiento y recompensas de misiones.
+  * `combate-service`: Motor de emparejamiento, cálculo de daño y batallas.
+  * `ranking-service`: Tablas de clasificación global competitiva.
+
+### Networking
+Rutas principales de negocio expuestas por el **API Gateway** (`http://localhost:8080`):
+* `/api/usuarios/**` -> Enruta a `usuario-service`
+* `/api/personajes/**` -> Enruta a `personaje-service`
+* `/api/armas/**` -> Enruta a `arma-service`
+* `/api/combates/**` -> Enruta a `combate-service`
+* `/api/inventarios/**` -> Enruta a `inventario-service`
+* `/api/misiones/**` -> Enruta a `mision-service`
+* `/api/pagos/**` -> Enruta a `pago-service`
+* `/api/rankings/**` -> Enruta a `ranking-service`
+* `/api/productos/**` -> Enruta a `tienda-service`
+
+### Accesos
+Toda la documentación interactiva OpenAPI (Swagger) está unificada y disponible vía API Gateway:
+* **Swagger UI Centralizado:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+*(Desde la esquina superior derecha del UI se puede desplegar un selector para consultar la documentación individual de cada uno de los 9 microservicios).*
+
+### Guía de Despliegue
+
+**Opción A: Entorno Contenerizado (Docker - Recomendado)**
+1. Verificar instalación de Docker y Docker Compose (v2+).
+2. Abrir una terminal en el directorio raíz del proyecto (`VideoJuegoOnline`).
+3. Construir las imágenes y levantar toda la orquestación en segundo plano:
+   ```bash
+   docker compose up -d --build
+   ```
+4. Monitorear el inicio: primero iniciará MySQL, luego `config-server`, luego `eureka-server` y finalmente el resto de la red.
+5. Validar operatividad entrando a [http://localhost:8761](http://localhost:8761) (Eureka) para confirmar que todas las instancias digan `UP`.
+6. Para apagar el entorno: `docker compose down`
+
+**Opción B: Entorno Local / Híbrido (IDE)**
+1. Levantar MySQL en el puerto `3306` (puede usar su propio XAMPP o correr solo el contenedor `database` del docker-compose).
+2. Asegurar credenciales por defecto (usuario: `videojuego`, pass: `secure_user_pass`).
+3. Compilar globalmente el proyecto: `mvn clean install -DskipTests`
+4. Levantar los microservicios desde el IDE (run de `...Application.java`) en **este orden estricto**:
+   - `config-server` (Puerto fijo 8888)
+   - `eureka-server` (Puerto fijo 8761)
+   - `api-gateway` (Puerto fijo 8080)
+   - *Microservicios de negocio* (Se les asignará un puerto dinámico automático al tener `port: 0`).
+
+---
+
 ## 1. Clasificación del Software
 * **Tipo de Componente:** Plataforma transaccional de misión crítica (Core Backend Platform).
 * **Arquitectura:** Arquitectura distribuida basada en microservicios desacoplados (Shared-Nothing Architecture).
