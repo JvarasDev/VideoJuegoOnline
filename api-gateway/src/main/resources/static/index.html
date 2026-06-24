@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoJuegoOnline API</title>
+    <style>
+        :root {
+            --bg-color: #fbfbfd;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-color: #0071e3;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            padding: 40px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            text-align: center;
+            animation: fade-in 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-top: 0;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+            text-align: left;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .stack-list,
+        .devs-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .stack-item,
+        .dev-item {
+            background-color: var(--bg-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .button-container {
+            margin-top: 48px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 980px;
+            font-size: 17px;
+            font-weight: 400;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0077ED;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>VideoJuegoOnline</h1>
+        <h2>Plataforma de Microservicios</h2>
+
+        <div class="section">
+            <div class="section-title">Desarrolladores</div>
+            <ul class="devs-list">
+                <li class="dev-item">Juan Varas</li>
+                <li class="dev-item">Elizabeth Reyes</li>
+                <li class="dev-item">Scarlett riquelme</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Tech Stack</div>
+            <ul class="stack-list">
+                <li class="stack-item">Java 21</li>
+                <li class="stack-item">Spring Boot 3.2.x</li>
+                <li class="stack-item">Spring Cloud Gateway</li>
+                <li class="stack-item">Eureka Server</li>
+                <li class="stack-item">MySQL</li>
+                <li class="stack-item">Docker</li>
+                <li class="stack-item">OpenAPI / Swagger</li>
+            </ul>
+        </div>
+
+        <div class="button-container">
+            <a href="/swagger-ui.html" class="btn">Ver Documentación Swagger</a>
+        </div>
+    </div>
+</body>
+
+</html>
