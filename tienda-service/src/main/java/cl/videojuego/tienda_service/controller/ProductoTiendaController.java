@@ -3,10 +3,12 @@ package cl.videojuego.tienda_service.controller;
 import cl.videojuego.tienda_service.dto.ProductoTiendaDTO;
 import cl.videojuego.tienda_service.dto.ProductoTiendaRegistroDTO;
 import cl.videojuego.tienda_service.service.ProductoTiendaService;
+import cl.videojuego.tienda_service.exception.ApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -50,7 +52,22 @@ public class ProductoTiendaController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "errorCode": "ERR_INTERNAL_500",
+                                      "mensaje": "Error al listar los productos",
+                                      "path": "/api/productos",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping
@@ -74,17 +91,68 @@ public class ProductoTiendaController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Datos inválidos enviados en la solicitud",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 400,
+                                      "error": "Bad Request",
+                                      "errorCode": "ERR_BAD_REQUEST_400",
+                                      "mensaje": "Error de validación",
+                                      "path": "/api/productos",
+                                      "timestamp": "2026-06-24T02:26:31",
+                                      "errores": [
+                                        {
+                                          "campo": "precio",
+                                          "mensaje": "El precio es obligatorio"
+                                        }
+                                      ]
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Arma, categoría o estado de producto no encontrado",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "errorCode": "ERR_NOT_FOUND_404",
+                                      "mensaje": "Categoría no encontrada",
+                                      "path": "/api/productos",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "errorCode": "ERR_INTERNAL_500",
+                                      "mensaje": "Error al registrar el producto",
+                                      "path": "/api/productos",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @PostMapping
@@ -114,7 +182,22 @@ public class ProductoTiendaController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "errorCode": "ERR_INTERNAL_500",
+                                      "mensaje": "Error al listar productos por categoría",
+                                      "path": "/api/productos/categoria/1",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/categoria/{idCategoriaProducto}")
@@ -146,7 +229,22 @@ public class ProductoTiendaController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "errorCode": "ERR_INTERNAL_500",
+                                      "mensaje": "Error al listar productos por estado",
+                                      "path": "/api/productos/estado/1",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/estado/{idEstadoProducto}")
@@ -178,12 +276,42 @@ public class ProductoTiendaController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Precio inválido",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 400,
+                                      "error": "Bad Request",
+                                      "errorCode": "ERR_BAD_REQUEST_400",
+                                      "mensaje": "El precio máximo no puede ser negativo",
+                                      "path": "/api/productos/precio-menor",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "errorCode": "ERR_INTERNAL_500",
+                                      "mensaje": "Error al buscar productos por precio",
+                                      "path": "/api/productos/precio-menor",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/precio-menor")
@@ -215,7 +343,22 @@ public class ProductoTiendaController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "errorCode": "ERR_INTERNAL_500",
+                                      "mensaje": "Error al buscar productos por nombre",
+                                      "path": "/api/productos/buscar-por-nombre",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/buscar-por-nombre")
@@ -247,12 +390,42 @@ public class ProductoTiendaController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Stock inválido",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 400,
+                                      "error": "Bad Request",
+                                      "errorCode": "ERR_BAD_REQUEST_400",
+                                      "mensaje": "El stock no puede ser negativo",
+                                      "path": "/api/productos/stock-mayor",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "errorCode": "ERR_INTERNAL_500",
+                                      "mensaje": "Error al listar productos con stock mayor a X",
+                                      "path": "/api/productos/stock-mayor",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/stock-mayor")
@@ -282,12 +455,42 @@ public class ProductoTiendaController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Producto no encontrado",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "errorCode": "ERR_NOT_FOUND_404",
+                                      "mensaje": "Producto con ID 1 no encontrado",
+                                      "path": "/api/productos/1",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "errorCode": "ERR_INTERNAL_500",
+                                      "mensaje": "Error interno del servidor",
+                                      "path": "/api/productos/1",
+                                      "timestamp": "2026-06-24T02:26:31"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/{idProducto}")

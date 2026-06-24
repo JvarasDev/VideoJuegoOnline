@@ -3,10 +3,12 @@ package cl.videojuego.arma_service.controller;
 import cl.videojuego.arma_service.dto.ArmaDTO;
 import cl.videojuego.arma_service.dto.ArmaRegistroDTO;
 import cl.videojuego.arma_service.service.ArmaService;
+import cl.videojuego.arma_service.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -48,7 +50,20 @@ public class ArmaController {
                 @ApiResponse(
                         responseCode = "500",
                         description = "Error interno del servidor",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 500,
+                                          "error": "Internal Server Error",
+                                          "message": "Error interno del servidor al obtener las armas",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 )
         })
         @GetMapping
@@ -72,17 +87,56 @@ public class ArmaController {
                 @ApiResponse(
                         responseCode = "400",
                         description = "Datos inválidos enviados en la solicitud",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 400,
+                                          "error": "Bad Request",
+                                          "message": "El nombre del arma es obligatorio",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 ),
                 @ApiResponse(
                         responseCode = "404",
                         description = "Tipo de arma o rareza no encontrada",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 404,
+                                          "error": "Not Found",
+                                          "message": "Tipo de arma no encontrado",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 ),
                 @ApiResponse(
                         responseCode = "500",
                         description = "Error interno del servidor",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 500,
+                                          "error": "Internal Server Error",
+                                          "message": "Error interno al registrar el arma",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 )
         })
         @PostMapping
@@ -110,9 +164,40 @@ public class ArmaController {
                         )
                 ),
                 @ApiResponse(
+                        responseCode = "404",
+                        description = "Tipo de arma no encontrado",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 404,
+                                          "error": "Not Found",
+                                          "message": "Tipo de arma no encontrado",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
+                ),
+                @ApiResponse(
                         responseCode = "500",
                         description = "Error interno del servidor",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 500,
+                                          "error": "Internal Server Error",
+                                          "message": "Error interno al listar armas por tipo",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 )
         })
         @GetMapping("/tipo/{idTipoArma}")
@@ -142,9 +227,40 @@ public class ArmaController {
                         )
                 ),
                 @ApiResponse(
+                        responseCode = "404",
+                        description = "Rareza de arma no encontrada",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 404,
+                                          "error": "Not Found",
+                                          "message": "Rareza de arma no encontrada",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
+                ),
+                @ApiResponse(
                         responseCode = "500",
                         description = "Error interno del servidor",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 500,
+                                          "error": "Internal Server Error",
+                                          "message": "Error interno al listar armas por rareza",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 )
         })
         @GetMapping("/rareza/{idRarezaArma}")
@@ -176,7 +292,20 @@ public class ArmaController {
                 @ApiResponse(
                         responseCode = "500",
                         description = "Error interno del servidor",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 500,
+                                          "error": "Internal Server Error",
+                                          "message": "Error interno al listar armas por nivel",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 )
         })
         @GetMapping("/nivel/{nivelMinimo}")
@@ -206,9 +335,40 @@ public class ArmaController {
                         )
                 ),
                 @ApiResponse(
+                        responseCode = "404",
+                        description = "Arma no encontrada",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 404,
+                                          "error": "Not Found",
+                                          "message": "No se encontraron armas con ese nombre",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
+                ),
+                @ApiResponse(
                         responseCode = "500",
                         description = "Error interno del servidor",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 500,
+                                          "error": "Internal Server Error",
+                                          "message": "Error interno al buscar armas",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 )
         })
         @GetMapping("/buscar-por-nombre")
@@ -240,12 +400,38 @@ public class ArmaController {
                 @ApiResponse(
                         responseCode = "400",
                         description = "Precio inválido",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 400,
+                                          "error": "Bad Request",
+                                          "message": "Precio inválido",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 ),
                 @ApiResponse(
                         responseCode = "500",
                         description = "Error interno del servidor",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 500,
+                                          "error": "Internal Server Error",
+                                          "message": "Error interno del servidor",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 )
         })
         @GetMapping("/precio-menor")
@@ -275,12 +461,38 @@ public class ArmaController {
                 @ApiResponse(
                         responseCode = "404",
                         description = "Arma no encontrada",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 404,
+                                          "error": "Not Found",
+                                          "message": "Arma con ID 1 no encontrada",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 ),
                 @ApiResponse(
                         responseCode = "500",
                         description = "Error interno del servidor",
-                        content = @Content
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ErrorResponse.class),
+                                examples = @ExampleObject(
+                                        value = """
+                                        {
+                                          "status": 500,
+                                          "error": "Internal Server Error",
+                                          "message": "Error interno del servidor",
+                                          "timestamp": "2026-06-24T02:26:31.0983806"
+                                        }
+                                        """
+                                )
+                        )
                 )
         })
         @GetMapping("/{idArma}")

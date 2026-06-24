@@ -1,11 +1,21 @@
 package cl.videojuego.mision_service.exception;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
+@Schema(description = "Estructura estándar de respuesta para errores de la API")
 public class ErrorResponse {
+    
+    @Schema(description = "Código de estado HTTP del error", example = "404")
     private int status;
+    
+    @Schema(description = "Razón general del error HTTP", example = "Not Found")
     private String error;
+    
+    @Schema(description = "Mensaje detallado explicando el motivo del error", example = "Misión no encontrada")
     private String message;
+    
+    @Schema(description = "Fecha y hora exacta en la que ocurrió el error", example = "2026-06-24T02:26:31.0983806")
     private LocalDateTime timestamp;
 
     public ErrorResponse() {}

@@ -3,10 +3,12 @@ package cl.videojuego.mision_service.controller;
 import cl.videojuego.mision_service.dto.MisionDTO;
 import cl.videojuego.mision_service.dto.MisionRegistroDTO;
 import cl.videojuego.mision_service.service.MisionService;
+import cl.videojuego.mision_service.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -48,7 +50,20 @@ public class MisionController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar las misiones",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping
@@ -72,17 +87,56 @@ public class MisionController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Datos inválidos enviados en la solicitud",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 400,
+                                      "error": "Bad Request",
+                                      "message": "El nombre de la misión es obligatorio",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Tipo de misión o estado no encontrado",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Tipo de misión no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al registrar la misión",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @PostMapping
@@ -109,9 +163,40 @@ public class MisionController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "404",
+                    description = "Tipo de misión no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Tipo de misión no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar misiones por tipo",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/tipo/{idTipoMision}")
@@ -141,9 +226,40 @@ public class MisionController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "404",
+                    description = "Estado de misión no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Estado de misión no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar misiones por estado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/estado/{idEstadoMision}")
@@ -175,7 +291,20 @@ public class MisionController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar misiones por nivel",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/nivel/{nivelMinimo}")
@@ -205,9 +334,40 @@ public class MisionController {
                     )
             ),
             @ApiResponse(
+                    responseCode = "404",
+                    description = "Misión no encontrada",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "No se encontraron misiones con ese nombre",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al buscar misiones",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/buscar-por-nombre")
@@ -239,12 +399,38 @@ public class MisionController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Valor de recompensa inválido",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 400,
+                                      "error": "Bad Request",
+                                      "message": "Valor de recompensa inválido",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al buscar misiones por recompensa",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/recompensa-menor")

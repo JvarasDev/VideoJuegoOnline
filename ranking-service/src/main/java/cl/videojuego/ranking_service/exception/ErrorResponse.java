@@ -1,15 +1,27 @@
 package cl.videojuego.ranking_service.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+@Schema(description = "Estructura estándar de respuesta para errores de la API")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
+    
+    @Schema(description = "Código de estado HTTP del error", example = "400")
     private int status;
+    
+    @Schema(description = "Razón general del error HTTP", example = "Bad Request")
     private String error;
+    
+    @Schema(description = "Mensaje detallado explicando el motivo del error", example = "Error de validación")
     private String message;
+    
+    @Schema(description = "Fecha y hora exacta en la que ocurrió el error", example = "2026-06-24T02:26:31.0983806")
     private LocalDateTime timestamp;
+    
+    @Schema(description = "Detalles adicionales, útil para errores de validación de campos", example = "{\"puntos\": \"Los puntos son obligatorios\"}")
     private Map<String, String> detalles;
 
     public ErrorResponse() {}

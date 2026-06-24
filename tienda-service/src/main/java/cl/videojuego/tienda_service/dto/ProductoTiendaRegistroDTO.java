@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-// DTO usado para crear productos en la tienda
 @Schema(description = "Datos requeridos para crear o actualizar un producto en la tienda")
 @Data
 public class ProductoTiendaRegistroDTO {

@@ -3,10 +3,12 @@ package cl.videojuego.ranking_service.controller;
 import cl.videojuego.ranking_service.dto.RankingDTO;
 import cl.videojuego.ranking_service.dto.RankingRegistroDTO;
 import cl.videojuego.ranking_service.service.RankingService;
+import cl.videojuego.ranking_service.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -48,7 +50,20 @@ public class RankingController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar todos los rankings",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping
@@ -72,17 +87,59 @@ public class RankingController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Datos inválidos enviados en la solicitud",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 400,
+                                      "error": "Bad Request",
+                                      "message": "Los puntos son obligatorios",
+                                      "timestamp": "2026-06-24T02:26:31.0983806",
+                                      "detalles": {
+                                        "puntos": "Los puntos son obligatorios"
+                                      }
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Personaje, liga o temporada no encontrada",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Liga no encontrada",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error interno al registrar el ranking",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @PostMapping
@@ -120,12 +177,38 @@ public class RankingController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Personaje no encontrado",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Personaje no encontrado en personaje-service",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al comunicar con el servicio de personajes",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/personaje/{idPersonaje}")
@@ -157,7 +240,20 @@ public class RankingController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar rankings por liga",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/liga/{idLiga}")
@@ -189,7 +285,20 @@ public class RankingController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar rankings por temporada",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/temporada/{idTemporada}")
@@ -221,12 +330,38 @@ public class RankingController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Valor de puntos inválido",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 400,
+                                      "error": "Bad Request",
+                                      "message": "Los puntos mínimos no pueden ser negativos",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al filtrar rankings por puntos",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/puntos-minimos")
@@ -258,7 +393,20 @@ public class RankingController {
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error interno del servidor",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/top10")
@@ -282,12 +430,38 @@ public class RankingController {
             @ApiResponse(
                     responseCode = "404",
                     description = "Ranking no encontrado",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Ranking con ID 1 no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Error interno del servidor",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error interno del servidor",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
             )
     })
     @GetMapping("/{idRanking}")

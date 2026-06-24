@@ -1,11 +1,21 @@
 package cl.videojuego.usuario_service.exception;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
+@Schema(description = "Estructura estándar para reportar errores de la API en formato JSON de acuerdo al RFC de problemas HTTP")
 public class ErrorResponse {
+    
+    @Schema(description = "Código de estado HTTP del error", example = "404")
     private int status;
+    
+    @Schema(description = "Razón o categoría general del error HTTP", example = "Not Found")
     private String error;
+    
+    @Schema(description = "Mensaje detallado explicando el motivo técnico del error", example = "Usuario con ID 99 no fue encontrado en el sistema")
     private String message;
+    
+    @Schema(description = "Fecha y hora exacta en la que ocurrió la excepción", example = "2026-06-24T02:26:31.0983806")
     private LocalDateTime timestamp;
 
     public ErrorResponse() {}

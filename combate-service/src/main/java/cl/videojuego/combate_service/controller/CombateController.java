@@ -3,8 +3,13 @@ package cl.videojuego.combate_service.controller;
 import cl.videojuego.combate_service.dto.CombateDTO;
 import cl.videojuego.combate_service.dto.CombateRegistroDTO;
 import cl.videojuego.combate_service.service.CombateService;
+import cl.videojuego.combate_service.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,8 +31,34 @@ public class CombateController {
 
     @Operation(summary = "Listar todos los combates", description = "Retorna una lista completa de todos los combates registrados en el sistema.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Combates listados correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(
+                    responseCode = "200", 
+                    description = "Combates listados correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = CombateDTO.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Error interno del servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar los combates",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            )
     })
     @GetMapping
     public ResponseEntity<List<CombateDTO>> listarTodos() {
@@ -36,10 +67,68 @@ public class CombateController {
 
     @Operation(summary = "Registrar nuevo combate", description = "Permite registrar un nuevo combate en el sistema indicando el atacante, defensor, ganador y demás detalles.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Combate registrado correctamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos en la solicitud"),
-            @ApiResponse(responseCode = "404", description = "Personaje, tipo de combate o estado no encontrado"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(
+                    responseCode = "201", 
+                    description = "Combate registrado correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CombateDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400", 
+                    description = "Datos inválidos en la solicitud",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 400,
+                                      "error": "Bad Request",
+                                      "message": "El personaje atacante es obligatorio",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Personaje, tipo de combate o estado no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Personaje atacante no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Error interno del servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al registrar el combate",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            )
     })
     @PostMapping
     public ResponseEntity<CombateDTO> registrar(
@@ -49,8 +138,52 @@ public class CombateController {
 
     @Operation(summary = "Listar combates por atacante", description = "Retorna todos los combates donde el personaje especificado actuó como atacante.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Combates listados correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(
+                    responseCode = "200", 
+                    description = "Combates listados correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = CombateDTO.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Personaje no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Personaje no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Error interno del servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar combates por atacante",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            )
     })
     @GetMapping("/atacante/{idPersonaje}")
     public ResponseEntity<List<CombateDTO>> listarPorAtacante(
@@ -60,8 +193,52 @@ public class CombateController {
 
     @Operation(summary = "Listar combates por defensor", description = "Retorna todos los combates donde el personaje especificado actuó como defensor.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Combates listados correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(
+                    responseCode = "200", 
+                    description = "Combates listados correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = CombateDTO.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Personaje no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Personaje no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Error interno del servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar combates por defensor",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            )
     })
     @GetMapping("/defensor/{idPersonaje}")
     public ResponseEntity<List<CombateDTO>> listarPorDefensor(
@@ -71,8 +248,52 @@ public class CombateController {
 
     @Operation(summary = "Listar combates por ganador", description = "Retorna todos los combates que fueron ganados por el personaje especificado.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Combates listados correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(
+                    responseCode = "200", 
+                    description = "Combates listados correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = CombateDTO.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Personaje no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Personaje ganador no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Error interno del servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error al listar combates por ganador",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            )
     })
     @GetMapping("/ganador/{idGanador}")
     public ResponseEntity<List<CombateDTO>> listarPorGanador(
@@ -82,8 +303,52 @@ public class CombateController {
 
     @Operation(summary = "Listar combates por tipo", description = "Retorna todos los combates de un tipo específico.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Combates listados correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(
+                    responseCode = "200", 
+                    description = "Combates listados correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = CombateDTO.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Tipo de combate no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Tipo de combate no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Error interno del servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error interno del servidor",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            )
     })
     @GetMapping("/tipo/{idTipoCombate}")
     public ResponseEntity<List<CombateDTO>> listarPorTipo(
@@ -93,8 +358,52 @@ public class CombateController {
 
     @Operation(summary = "Listar combates por estado", description = "Retorna todos los combates que se encuentran en un estado específico.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Combates listados correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(
+                    responseCode = "200", 
+                    description = "Combates listados correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = CombateDTO.class)
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404", 
+                    description = "Estado de combate no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 404,
+                                      "error": "Not Found",
+                                      "message": "Estado de combate no encontrado",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500", 
+                    description = "Error interno del servidor",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                    {
+                                      "status": 500,
+                                      "error": "Internal Server Error",
+                                      "message": "Error interno del servidor",
+                                      "timestamp": "2026-06-24T02:26:31.0983806"
+                                    }
+                                    """
+                            )
+                    )
+            )
     })
     @GetMapping("/estado/{idEstadoCombate}")
     public ResponseEntity<List<CombateDTO>> listarPorEstado(
