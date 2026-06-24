@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
      * PagoInsuficienteException, MetodoPagoNotFoundException, EstadoPagoNotFoundException,
      * StockInsuficienteException). El status HTTP está embebido en la propia excepción.
      */
+    // error 409
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
         ErrorResponse error = new ErrorResponse(
@@ -31,6 +32,7 @@ public class GlobalExceptionHandler {
      * PagoDuplicadoException no extiende ApiException — se captura por separado.
      * Deuda técnica: status 401 en PagoInsuficienteException pendiente de revisión.
      */
+    // Error 409 pago duplicado  regla de negocio incumplida
     @ExceptionHandler(PagoDuplicadoException.class)
     public ResponseEntity<ErrorResponse> handlePagoDuplicado(PagoDuplicadoException ex) {
         ErrorResponse error = new ErrorResponse(
@@ -41,6 +43,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+
+    // Error 400 . datos invalidos enviados por el cliente
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String errors = ex.getBindingResult().getFieldErrors()
@@ -56,14 +60,31 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+
+    // Error 500 . error interno del sistema
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         ErrorResponse error = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
+                "ERROR INTERNO DEL SISTEMA, CAPA 8",
                 ex.getMessage()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handleRecursoNoEncontrado(
+            RecursoNoEncontradoException ex
+    ) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Recurso no encontrado",
+                ex.getMessage()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }
 
