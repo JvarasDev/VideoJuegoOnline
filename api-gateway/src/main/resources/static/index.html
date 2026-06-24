@@ -1,162 +1,649 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoJuegoOnline API</title>
+    <title>VideoJuegoOnline | Core System</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap');
+
         :root {
-            --bg-color: #fbfbfd;
-            --text-primary: #1d1d1f;
-            --text-secondary: #86868b;
-            --accent-color: #0071e3;
-            --card-bg: #ffffff;
+            --bg: #030305;
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ea;
+            --neon-purple: #bc13fe;
+            --text-main: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: crosshair !important;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px;
+        }
+
+        /* --- BACKGROUND: Interactive Star Warp --- */
+        .warp-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 250vw; height: 250vh;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            perspective: 800px;
+            transition: transform 0.2s ease-out;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #000 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><circle cx="20" cy="20" r="1.5" fill="white" opacity="0.8"/><circle cx="150" cy="80" r="2" fill="white" opacity="0.6"/><circle cx="280" cy="40" r="1" fill="white" opacity="0.5"/><circle cx="350" cy="200" r="2.5" fill="%2300f3ff" opacity="0.9"/><circle cx="80" cy="300" r="1.5" fill="%23ff00ea" opacity="0.7"/><circle cx="250" cy="350" r="2" fill="white" opacity="0.8"/></svg>') repeat;
+            transform-style: preserve-3d;
+            animation: warpMove 15s linear infinite;
+            opacity: 0.4;
+        }
+
+        .stars::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: inherit;
+            transform: translateZ(-600px) scale(2.5);
+            animation: warpMove 25s linear infinite reverse;
+        }
+
+        @keyframes warpMove {
+            0% { transform: translateZ(0) rotate(0deg); }
+            100% { transform: translateZ(250px) rotate(360deg); }
+        }
+
+        /* CRT Screen Overlays */
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
+            background-size: 100% 4px;
+            z-index: 998;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        
+        .crt-flicker {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.02);
+            z-index: 999;
+            pointer-events: none;
+            animation: crtFlicker 0.15s infinite;
+        }
+
+        @keyframes crtFlicker {
+            0% { opacity: 0.05; }
+            50% { opacity: 0.02; }
+            100% { opacity: 0.08; }
+        }
+
+        /* Vignette */
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.9) 100%);
+            z-index: 997;
+            pointer-events: none;
+        }
+
+        /* --- INTRO SCREEN (Trailer Mode) --- */
+        .intro-screen {
+            position: absolute;
+            z-index: 50;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(10,10,15,0.8) 0%, #000 100%);
+            transition: opacity 1.5s ease-in-out, transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+            backdrop-filter: blur(5px);
         }
 
-        .container {
-            max-width: 800px;
-            width: 90%;
-            padding: 40px;
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-            text-align: center;
-            animation: fade-in 0.8s ease-out;
+        .intro-screen.hidden {
+            opacity: 0;
+            transform: scale(3) translateZ(600px);
+            pointer-events: none;
         }
 
-        h1 {
-            font-size: 48px;
-            font-weight: 600;
-            letter-spacing: -0.003em;
-            margin-bottom: 8px;
-        }
-
-        h2 {
-            font-size: 24px;
-            font-weight: 400;
-            color: var(--text-secondary);
-            margin-top: 0;
-            margin-bottom: 40px;
-        }
-
-        .section {
-            margin-bottom: 32px;
-            text-align: left;
-            padding: 0 20px;
-        }
-
-        .section-title {
-            font-size: 14px;
+        .studio-logo {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 20px;
+            color: var(--neon-blue);
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-secondary);
-            font-weight: 600;
-            margin-bottom: 12px;
+            animation: pulseText 3s infinite;
+            margin-bottom: 15vh;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
         }
 
-        .stack-list,
-        .devs-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .game-title-huge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            position: relative;
+            color: #fff;
+            text-shadow: 
+                0 0 10px var(--neon-blue),
+                0 0 20px var(--neon-purple),
+                0 0 40px var(--neon-blue);
+            animation: glitch 4s infinite, floatTitle 6s ease-in-out infinite;
+        }
+
+        @keyframes floatTitle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: none; text-shadow: 0 0 10px var(--neon-blue); }
+            92% { transform: skew(0deg); }
+            94% { transform: skew(15deg) scale(1.05); text-shadow: -10px 0 var(--neon-pink), 10px 0 var(--neon-blue); }
+            96% { transform: skew(-15deg) scale(0.95); text-shadow: 10px 0 var(--neon-pink), -10px 0 var(--neon-blue); }
+            98% { transform: none; filter: hue-rotate(90deg) contrast(200%); }
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .press-start {
+            margin-top: 60px;
+            font-size: 1.8rem;
+            letter-spacing: 8px;
+            color: var(--neon-pink);
+            cursor: pointer !important;
+            padding: 20px 50px;
+            border: 2px solid var(--neon-pink);
+            background: rgba(255, 0, 234, 0.05);
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px rgba(255, 0, 234, 0.3), inset 0 0 20px rgba(255, 0, 234, 0.2);
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            animation: breatheBtn 2s infinite alternate;
+        }
+        
+        @keyframes breatheBtn {
+            from { box-shadow: 0 0 20px rgba(255, 0, 234, 0.3), inset 0 0 20px rgba(255, 0, 234, 0.2); }
+            to { box-shadow: 0 0 40px rgba(255, 0, 234, 0.6), inset 0 0 40px rgba(255, 0, 234, 0.5); }
+        }
+
+        .press-start::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
+            transform: skewX(-25deg);
+            transition: all 0.5s;
+        }
+
+        .press-start:hover {
+            background: var(--neon-pink);
+            color: #000;
+            box-shadow: 0 0 50px var(--neon-pink), inset 0 0 30px var(--neon-pink);
+            transform: scale(1.1);
+            text-shadow: none;
+        }
+
+        .press-start:hover::before {
+            animation: btnShine 0.8s forwards;
+        }
+
+        .press-start.clicked {
+            animation: extremeFlicker 0.15s 4;
+        }
+
+        @keyframes extremeFlicker {
+            0%, 100% { opacity: 1; transform: scale(1.1) skew(0deg); background: #fff; }
+            50% { opacity: 0; transform: scale(1.6) skew(20deg); background: var(--neon-blue); }
+        }
+
+        /* --- MAIN DASHBOARD (HUD) --- */
+        .hud-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 950px;
+            background: rgba(2, 6, 12, 0.75);
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.25), inset 0 0 30px rgba(0, 243, 255, 0.15);
+            padding: 50px;
+            opacity: 0;
+            transform: scale(0.7) translateZ(-600px) rotateX(30deg);
+            transition: all 1.8s cubic-bezier(0.19, 1, 0.22, 1);
+            pointer-events: none;
+            clip-path: polygon(0 30px, 30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%);
+            animation: borderPulse 4s infinite alternate;
+        }
+
+        @keyframes borderPulse {
+            0% { border-color: var(--neon-blue); box-shadow: 0 0 40px rgba(0, 243, 255, 0.25), inset 0 0 30px rgba(0, 243, 255, 0.15); }
+            50% { border-color: var(--neon-purple); box-shadow: 0 0 40px rgba(188, 19, 254, 0.25), inset 0 0 30px rgba(188, 19, 254, 0.15); }
+            100% { border-color: var(--neon-pink); box-shadow: 0 0 40px rgba(255, 0, 234, 0.25), inset 0 0 30px rgba(255, 0, 234, 0.15); }
+        }
+
+        /* Hexagon Pattern Overlay for HUD */
+        .hud-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg width="40" height="69.282" xmlns="http://www.w3.org/2000/svg"><path d="M40 17.321v34.64L20 69.281 0 51.961v-34.64L20 0l20 17.321z" fill="none" stroke="rgba(0,243,255,0.03)" stroke-width="1"/></svg>');
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .hud-container.active {
+            opacity: 1;
+            transform: scale(1) translateZ(0) rotateX(0deg);
+            pointer-events: auto;
+        }
+
+        /* High-tech Corners */
+        .hud-corner {
+            position: absolute;
+            width: 40px; height: 40px;
+            border: 4px solid var(--neon-pink);
+            transition: all 0.5s;
+        }
+        .corner-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .corner-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+        .hud-header {
             display: flex;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(0, 243, 255, 0.4);
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .hud-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0;
+            width: 100px; height: 2px;
+            background: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+            animation: scanLine 3s infinite ease-in-out alternate;
+        }
+
+        @keyframes scanLine {
+            0% { left: 0; width: 50px; }
+            100% { left: calc(100% - 200px); width: 200px; }
+        }
+
+        .hud-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .hud-status {
+            font-size: 1.4rem;
+            color: #0f0;
+            text-shadow: 0 0 15px #0f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .hud-status::before {
+            content: '';
+            display: inline-block;
+            width: 12px; height: 12px;
+            background: #0f0;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #0f0;
+            animation: blink 1s infinite;
+        }
+
+        .hud-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .hud-panel {
+            background: rgba(0, 243, 255, 0.03);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 30px;
+            position: relative;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .hud-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 3px; height: 100%;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .hud-panel:hover {
+            background: rgba(0, 243, 255, 0.08);
+            border-color: var(--neon-blue);
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: var(--neon-pink);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .cyber-list {
+            list-style: none;
+            font-size: 1.3rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .cyber-list li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
             gap: 12px;
         }
 
-        .stack-item,
-        .dev-item {
-            background-color: var(--bg-color);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+        .cyber-list li::before {
+            content: '>';
+            color: var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-blue);
         }
 
-        .button-container {
-            margin-top: 48px;
+        .dev-names {
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255,255,255,0.8);
+            letter-spacing: 1px;
         }
 
-        .btn {
+        /* Scramble text class */
+        .scramble {
             display: inline-block;
-            background-color: var(--accent-color);
-            color: white;
+        }
+
+        /* Hexagon Button */
+        .cyber-btn-wrapper {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .cyber-btn {
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            color: #000;
             text-decoration: none;
-            padding: 14px 28px;
-            border-radius: 980px;
-            font-size: 17px;
-            font-weight: 400;
-            transition: all 0.3s ease;
+            background: var(--neon-blue);
+            padding: 20px 60px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 4px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+            cursor: crosshair !important;
         }
 
-        .btn:hover {
-            background-color: #0077ED;
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        .cyber-btn:hover {
+            background: #fff;
+            box-shadow: 0 0 40px #fff;
+            transform: scale(1.08);
+            color: var(--bg);
         }
 
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+        .cyber-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.9), transparent);
+            transform: skewX(-25deg);
+            animation: btnShine 2.5s infinite;
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes btnShine {
+            0%, 50% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        /* Screen flash effect */
+        .flash {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .flash.active {
+            animation: flashAnim 1.8s ease-out forwards;
+        }
+
+        @keyframes flashAnim {
+            0% { opacity: 1; filter: brightness(2) contrast(2); }
+            100% { opacity: 0; filter: none; }
+        }
+
+        @media (max-width: 850px) {
+            .hud-grid { grid-template-columns: 1fr; }
+            .game-title-huge { font-size: 2.8rem; }
+            .hud-container { padding: 30px; }
         }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>VideoJuegoOnline</h1>
-        <h2>Plataforma de Microservicios</h2>
+    <div class="vignette"></div>
+    <div class="scanlines"></div>
+    <div class="crt-flicker"></div>
+    
+    <div class="warp-container" id="warp-container">
+        <div class="stars"></div>
+    </div>
 
-        <div class="section">
-            <div class="section-title">Desarrolladores</div>
-            <ul class="devs-list">
-                <li class="dev-item">Juan Varas</li>
-                <li class="dev-item">Elizabeth Reyes</li>
-                <li class="dev-item">Scarlett riquelme</li>
-            </ul>
+    <div class="flash" id="flash"></div>
+
+    <!-- INTRO TRAILER SCREEN -->
+    <div class="intro-screen" id="intro">
+        <div class="studio-logo" id="studioLogo">J.VARAS • E.REYES • S.RIQUELME</div>
+        <div class="game-title-huge">VideoJuegoOnline<br>CORE</div>
+        <button class="press-start" id="startBtn">INICIAR SISTEMA</button>
+    </div>
+
+    <!-- MAIN HUD -->
+    <div class="hud-container" id="hud">
+        <div class="hud-corner corner-tl"></div>
+        <div class="hud-corner corner-br"></div>
+        
+        <div class="hud-header">
+            <div class="hud-title scramble">API GATEWAY HUB</div>
+            <div class="hud-status scramble">SYS.ONLINE</div>
         </div>
 
-        <div class="section">
-            <div class="section-title">Tech Stack</div>
-            <ul class="stack-list">
-                <li class="stack-item">Java 21</li>
-                <li class="stack-item">Spring Boot 3.2.x</li>
-                <li class="stack-item">Spring Cloud Gateway</li>
-                <li class="stack-item">Eureka Server</li>
-                <li class="stack-item">MySQL</li>
-                <li class="stack-item">Docker</li>
-                <li class="stack-item">OpenAPI / Swagger</li>
-            </ul>
+        <div class="hud-grid">
+            <div class="hud-panel">
+                <div class="panel-title scramble">Comando Operativo</div>
+                <ul class="cyber-list">
+                    <li><span style="color:var(--text-dim)">Lead:</span> <span class="dev-names scramble" data-text="Juan Varas">Juan Varas</span></li>
+                    <li><span style="color:var(--text-dim)">Lead:</span> <span class="dev-names scramble" data-text="Elizabeth Reyes">Elizabeth Reyes</span></li>
+                    <li><span style="color:var(--text-dim)">Lead:</span> <span class="dev-names scramble" data-text="Scarlett Riquelme">Scarlett Riquelme</span></li>
+                    <li style="margin-top:20px; color:#0f0; font-size:1rem;" class="scramble">STATUS: ACCESO CONCEDIDO</li>
+                </ul>
+            </div>
+
+            <div class="hud-panel">
+                <div class="panel-title scramble">Núcleo Tecnológico</div>
+                <ul class="cyber-list" style="font-size: 1.1rem;">
+                    <li><span class="scramble" data-text="Java 21 LTS">Java 21 LTS</span></li>
+                    <li><span class="scramble" data-text="Spring Boot 3.2.x">Spring Boot 3.2.x</span></li>
+                    <li><span class="scramble" data-text="Spring Cloud / Eureka">Spring Cloud / Eureka</span></li>
+                    <li><span class="scramble" data-text="Docker / MySQL">Docker / MySQL</span></li>
+                    <li><span class="scramble" data-text="OpenAPI Swagger">OpenAPI Swagger</span></li>
+                </ul>
+            </div>
         </div>
 
-        <div class="button-container">
-            <a href="/swagger-ui.html" class="btn">Ver Documentación Swagger</a>
+        <div class="cyber-btn-wrapper">
+            <a href="#" id="swaggerBtn" class="cyber-btn scramble" data-text="ACCEDER A SWAGGER">ACCEDER A SWAGGER</a>
         </div>
     </div>
-</body>
 
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const introScreen = document.getElementById('intro');
+        const hud = document.getElementById('hud');
+        const flash = document.getElementById('flash');
+        const swaggerBtn = document.getElementById('swaggerBtn');
+        const warpContainer = document.getElementById('warp-container');
+        
+        // Efecto Paralaje en las estrellas con el raton
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 50;
+            const y = (e.clientY / window.innerHeight - 0.5) * 50;
+            warpContainer.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+        });
+
+        // Efecto Scramble / Hacker Text
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span style="color:var(--neon-blue)">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        // Init Button Click
+        startBtn.addEventListener('click', () => {
+            startBtn.classList.add('clicked');
+            
+            setTimeout(() => {
+                flash.classList.add('active');
+                
+                setTimeout(() => {
+                    introScreen.classList.add('hidden');
+                    hud.classList.add('active');
+                    
+                    // Ejecutar Scramble Effect al mostrar HUD
+                    setTimeout(() => {
+                        document.querySelectorAll('.scramble').forEach(el => {
+                            const originalText = el.getAttribute('data-text') || el.innerText;
+                            const fx = new TextScramble(el);
+                            fx.setText(originalText);
+                        });
+                    }, 500);
+                    
+                }, 100);
+                
+            }, 600);
+        });
+
+        // Swagger Button Click (Hyperdrive)
+        swaggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            hud.style.transition = 'all 0.8s cubic-bezier(0.8, 0, 0.2, 1)';
+            hud.style.transform = 'scale(4) translateZ(1000px)';
+            hud.style.opacity = '0';
+            
+            warpContainer.style.transition = 'all 1s ease-in';
+            warpContainer.style.transform = 'translate(-50%, -50%) scale(3)';
+            
+            setTimeout(() => {
+                flash.style.background = 'var(--neon-blue)';
+                flash.classList.remove('active');
+                void flash.offsetWidth;
+                flash.style.animationDuration = '2s';
+                flash.classList.add('active');
+                
+                setTimeout(() => {
+                    window.location.href = '/swagger-ui.html';
+                }, 600);
+            }, 700);
+        });
+    </script>
+</body>
 </html>

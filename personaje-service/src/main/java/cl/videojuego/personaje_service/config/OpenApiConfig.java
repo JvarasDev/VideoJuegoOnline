@@ -21,7 +21,7 @@ public class OpenApiConfig {
                     .title("API de Microservicio")
                     .version("1.0.0")
                     .contact(new Contact()
-                        .name("Juan Varas y Elizabeth Reyes")))
+                        .name("Juan Varas, Elizabeth Reyes y Scarlett Riquelme")))
                 .servers(List.of(gatewayServer));
     }
 
@@ -29,4 +29,5 @@ public class OpenApiConfig {
 
 
 }
+
 
