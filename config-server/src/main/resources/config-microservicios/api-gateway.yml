@@ -1,346 +1,179 @@
+# ─────────────────────────────────────────────────────────────
+# CONFIGURACIÓN SENIOR - VIDEOJUEGO ONLINE
+# ─────────────────────────────────────────────────────────────
 server:
   port: 8080
 
 spring:
   main:
     web-application-type: reactive
-
   cloud:
     gateway:
       httpclient:
-        connect-timeout: 3000      
-        response-timeout: 10s      
-
+        connect-timeout: 3000
+        response-timeout: 10s
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins:
-              - "http://localhost:3000"
-              - "http://localhost:5173"
-              - "http://localhost:8080"
-              - "http://169.254.175.123:3000"
-              - "http://169.254.175.123:8080"
-              - "http://169.254.175.123:5173"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - PATCH
-              - OPTIONS
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
             maxAge: 3600
-
+      
+      # Rutas de los 9 Microservicios Reales
       routes:
-            # ════════════════════════════════════════════════════════════
-            # PATRÓN DE RUTAS:
-            #   /nombre-servicio/**  → StripPrefix=1 → controller recibe /api/recurso/**
-            #   /api/recurso/**      → sin strip       → controller recibe /api/recurso/**
-            #
-            # Ambos patrones son válidos. Usar el que sea más conveniente.
-            # Ejemplo: GET http://localhost:8080/pago-service/api/pagos   ✅
-            #          GET http://localhost:8080/api/pagos                 ✅
-            # ════════════════════════════════════════════════════
+        - id: arma-service
+          uri: lb://arma-service
+          predicates:
+            - Path=/api/armas/**
 
-            # ── usuario-service ──────────────────────────────────────────
-            - id: usuario-service-api
-              uri: lb://usuario-service
-              predicates:
-                - Path=/api/usuarios/**
-            - id: usuario-service
-              uri: lb://usuario-service
-              predicates:
-                - Path=/usuario-service/**
-              filters:
-                - StripPrefix=1
+        - id: combate-service
+          uri: lb://combate-service
+          predicates:
+            - Path=/api/combates/**
 
-            # ── personaje-service ─────────────────────────────────────────
-            - id: personaje-service-api
-              uri: lb://personaje-service
-              predicates:
-                - Path=/api/personajes/**
-            - id: personaje-service
-              uri: lb://personaje-service
-              predicates:
-                - Path=/personaje-service/**
-              filters:
-                - StripPrefix=1
+        - id: inventario-service
+          uri: lb://inventario-service
+          predicates:
+            - Path=/api/inventarios/**, /api/items-inventario/**
 
-            # ── arma-service ──────────────────────────────────────────────
-            - id: arma-service-api
-              uri: lb://arma-service
-              predicates:
-                - Path=/api/armas/**
-            - id: arma-service
-              uri: lb://arma-service
-              predicates:
-                - Path=/arma-service/**
-              filters:
-                - StripPrefix=1
+        - id: mision-service
+          uri: lb://mision-service
+          predicates:
+            - Path=/api/misiones/**
 
-            # ── tienda-service ────────────────────────────────────────────
-            - id: tienda-service-api
-              uri: lb://tienda-service
-              predicates:
-                - Path=/api/productos/**
-            - id: tienda-service
-              uri: lb://tienda-service
-              predicates:
-                - Path=/tienda-service/**
-              filters:
-                - StripPrefix=1
+        - id: pago-service
+          uri: lb://pago-service
+          predicates:
+            - Path=/api/pagos/**
 
-            - id: tienda-api
-              uri: lb://tienda-service
-              predicates:
-                - Path=/api/tienda/**
-              filters:
-                - RewritePath=/api/tienda(?<remaining>/?.*), /api/productos${remaining}
+        - id: personaje-service
+          uri: lb://personaje-service
+          predicates:
+            - Path=/api/personajes/**
 
-            # ── pago-service ──────────────────────────────────────────────
-            - id: pago-service-api
-              uri: lb://pago-service
-              predicates:
-                - Path=/api/pagos/**
-            - id: pago-service
-              uri: lb://pago-service
-              predicates:
-                - Path=/pago-service/**
-              filters:
-                - StripPrefix=1
+        - id: ranking-service
+          uri: lb://ranking-service
+          predicates:
+            - Path=/api/rankings/**
 
-            - id: moneda-api
-              uri: lb://moneda-service
-              predicates:
-                - Path=/api/monedas/**
-              filters:
-                - RewritePath=/api/monedas(?<remaining>/?.*), /api/monedas${remaining}
+        - id: tienda-service
+          uri: lb://tienda-service
+          predicates:
+            - Path=/api/productos/**
 
-            # ── inventario-service ────────────────────────────────────────
-            - id: inventario-service-api-inventarios
-              uri: lb://inventario-service
-              predicates:
-                - Path=/api/inventarios/**
-            - id: inventario-service-api-items
-              uri: lb://inventario-service
-              predicates:
-                - Path=/api/items-inventario/**
-            - id: inventario-service
-              uri: lb://inventario-service
-              predicates:
-                - Path=/inventario-service/**
-              filters:
-                - StripPrefix=1
+        - id: usuario-service
+          uri: lb://usuario-service
+          predicates:
+            - Path=/api/usuarios/**
 
-            - id: inventario-api
-              uri: lb://inventario-service
-              predicates:
-                - Path=/api/inventario/**
-              filters:
-                - RewritePath=/api/inventario(?<remaining>/?.*), /api/inventarios${remaining}
+        - id: arma-docs
+          uri: lb://arma-service
+          predicates:
+            - Path=/v3/api-docs/arma-service
+          filters:
+            - RewritePath=/v3/api-docs/arma-service, /v3/api-docs
 
-            # ── mision-service ────────────────────────────────────────────
-            - id: mision-service-api
-              uri: lb://mision-service
-              predicates:
-                - Path=/api/misiones/**
-            - id: mision-service
-              uri: lb://mision-service
-              predicates:
-                - Path=/mision-service/**
-              filters:
-                - StripPrefix=1
+        - id: combate-docs
+          uri: lb://combate-service
+          predicates:
+            - Path=/v3/api-docs/combate-service
+          filters:
+            - RewritePath=/v3/api-docs/combate-service, /v3/api-docs
 
-            # ── ranking-service ───────────────────────────────────────────
-            - id: ranking-service-api
-              uri: lb://ranking-service
-              predicates:
-                - Path=/api/rankings/**
-            - id: ranking-service
-              uri: lb://ranking-service
-              predicates:
-                - Path=/ranking-service/**
-              filters:
-                - StripPrefix=1
+        - id: inventario-docs
+          uri: lb://inventario-service
+          predicates:
+            - Path=/v3/api-docs/inventario-service
+          filters:
+            - RewritePath=/v3/api-docs/inventario-service, /v3/api-docs
 
-            - id: ranking-api
-              uri: lb://ranking-service
-              predicates:
-                - Path=/api/ranking/**
-              filters:
-                - RewritePath=/api/ranking(?<remaining>/?.*), /api/rankings${remaining}
+        - id: mision-docs
+          uri: lb://mision-service
+          predicates:
+            - Path=/v3/api-docs/mision-service
+          filters:
+            - RewritePath=/v3/api-docs/mision-service, /v3/api-docs
 
-            # ── combate-service ───────────────────────────────────────────
-            - id: combate-service-api
-              uri: lb://combate-service
-              predicates:
-                - Path=/api/combates/**
-            - id: combate-service
-              uri: lb://combate-service
-              predicates:
-                - Path=/combate-service/**
-              filters:
-                - StripPrefix=1
+        - id: pago-docs
+          uri: lb://pago-service
+          predicates:
+            - Path=/v3/api-docs/pago-service
+          filters:
+            - RewritePath=/v3/api-docs/pago-service, /v3/api-docs
 
-            - id: logro-api
-              uri: lb://logro-service
-              predicates:
-                - Path=/api/logros/**
-              filters:
-                - RewritePath=/api/logros(?<remaining>/?.*), /api/logros${remaining}
+        - id: personaje-docs
+          uri: lb://personaje-service
+          predicates:
+            - Path=/v3/api-docs/personaje-service
+          filters:
+            - RewritePath=/v3/api-docs/personaje-service, /v3/api-docs
 
-            - id: usuario-docs
-              uri: lb://usuario-service
-              predicates:
-                - Path=/v3/api-docs/usuario-service
-              filters:
-                - RewritePath=/v3/api-docs/usuario-service, /v3/api-docs
+        - id: ranking-docs
+          uri: lb://ranking-service
+          predicates:
+            - Path=/v3/api-docs/ranking-service
+          filters:
+            - RewritePath=/v3/api-docs/ranking-service, /v3/api-docs
 
-            - id: pago-docs
-              uri: lb://pago-service
-              predicates:
-                - Path=/v3/api-docs/pago-service
-              filters:
-                - RewritePath=/v3/api-docs/pago-service, /v3/api-docs
+        - id: tienda-docs
+          uri: lb://tienda-service
+          predicates:
+            - Path=/v3/api-docs/tienda-service
+          filters:
+            - RewritePath=/v3/api-docs/tienda-service, /v3/api-docs
 
-            - id: tienda-docs
-              uri: lb://tienda-service
-              predicates:
-                - Path=/v3/api-docs/tienda-service
-              filters:
-                - RewritePath=/v3/api-docs/tienda-service, /v3/api-docs
-
-            - id: inventario-docs
-              uri: lb://inventario-service
-              predicates:
-                - Path=/v3/api-docs/inventario-service
-              filters:
-                - RewritePath=/v3/api-docs/inventario-service, /v3/api-docs
-
-            - id: moneda-docs
-              uri: lb://moneda-service
-              predicates:
-                - Path=/v3/api-docs/moneda-service
-              filters:
-                - RewritePath=/v3/api-docs/moneda-service, /v3/api-docs
-
-            - id: mision-docs
-              uri: lb://mision-service
-              predicates:
-                - Path=/v3/api-docs/mision-service
-              filters:
-                - RewritePath=/v3/api-docs/mision-service, /v3/api-docs
-
-            - id: ranking-docs
-              uri: lb://ranking-service
-              predicates:
-                - Path=/v3/api-docs/ranking-service
-              filters:
-                - RewritePath=/v3/api-docs/ranking-service, /v3/api-docs
-
-            - id: logro-docs
-              uri: lb://logro-service
-              predicates:
-                - Path=/v3/api-docs/logro-service
-              filters:
-                - RewritePath=/v3/api-docs/logro-service, /v3/api-docs
-
-            - id: personaje-docs
-              uri: lb://personaje-service
-              predicates:
-                - Path=/v3/api-docs/personaje-service
-              filters:
-                - RewritePath=/v3/api-docs/personaje-service, /v3/api-docs
-
-            - id: arma-docs
-              uri: lb://arma-service
-              predicates:
-                - Path=/v3/api-docs/arma-service
-              filters:
-                - RewritePath=/v3/api-docs/arma-service, /v3/api-docs
-
-            - id: combate-docs
-              uri: lb://combate-service
-              predicates:
-                - Path=/v3/api-docs/combate-service
-              filters:
-                - RewritePath=/v3/api-docs/combate-service, /v3/api-docs
+        - id: usuario-docs
+          uri: lb://usuario-service
+          predicates:
+            - Path=/v3/api-docs/usuario-service
+          filters:
+            - RewritePath=/v3/api-docs/usuario-service, /v3/api-docs
 
 springdoc:
-  api-docs:
-    path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
-    config-url: /v3/api-docs/swagger-config
     urls:
-      - name: USUARIO-SERVICE
-        url: /v3/api-docs/usuario-service
-      - name: PAGO-SERVICE
-        url: /v3/api-docs/pago-service
-      - name: TIENDA-SERVICE
-        url: /v3/api-docs/tienda-service
-      - name: INVENTARIO-SERVICE
-        url: /v3/api-docs/inventario-service
-      - name: MONEDA-SERVICE
-        url: /v3/api-docs/moneda-service
-      - name: MISION-SERVICE
-        url: /v3/api-docs/mision-service
-      - name: RANKING-SERVICE
-        url: /v3/api-docs/ranking-service
-      - name: LOGRO-SERVICE
-        url: /v3/api-docs/logro-service
-      - name: PERSONAJE-SERVICE
-        url: /v3/api-docs/personaje-service
-      - name: ARMA-SERVICE
+      - name: 01. Arma Service
         url: /v3/api-docs/arma-service
-      - name: COMBATE-SERVICE
+      - name: 02. Combate Service
         url: /v3/api-docs/combate-service
-    operationsSorter: method
+      - name: 03. Inventario Service
+        url: /v3/api-docs/inventario-service
+      - name: 04. Mision Service
+        url: /v3/api-docs/mision-service
+      - name: 05. Pago Service
+        url: /v3/api-docs/pago-service
+      - name: 06. Personaje Service
+        url: /v3/api-docs/personaje-service
+      - name: 07. Ranking Service
+        url: /v3/api-docs/ranking-service
+      - name: 08. Tienda Service
+        url: /v3/api-docs/tienda-service
+      - name: 09. Usuario Service
+        url: /v3/api-docs/usuario-service
 
 eureka:
   client:
+    register-with-eureka: true
+    registry-fetch-interval-seconds: 5
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://eureka-server:8761/eureka/
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,gateway
-  endpoint:
-    health:
-      show-details: always
-    gateway:
-      enabled: true
+        include: "*"
   tracing:
     sampling:
       probability: 1.0
 
 logging:
   level:
-    cl.videojuego.api_gateway: DEBUG
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG
-    org.springframework.cloud.loadbalancer: DEBUG
-  pattern:
-    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
-
----
-# Perfil docker: todo dentro de la red Docker, resolución por nombre de servicio
-spring:
-  config:
-    activate:
-      on-profile: docker
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-
-logging:
-  level:
-    cl.videojuego.api_gateway: DEBUG
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: DEBUG
-    org.springframework.cloud.loadbalancer: DEBUG
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.loadbalancer: TRACE
+    org.springframework.web.reactive: DEBUG
+    reactor.netty: DEBUG
+    com.netflix.discovery: DEBUG

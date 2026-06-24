@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 // Cliente Feign para comunicarse con arma-service mediante Eureka
-@FeignClient(name = "arma-service")
+@FeignClient(name = "api-gateway", contextId = "armaClient")
 public interface ArmaClient {
 
     // Llama a arma-service para buscar un arma por ID
