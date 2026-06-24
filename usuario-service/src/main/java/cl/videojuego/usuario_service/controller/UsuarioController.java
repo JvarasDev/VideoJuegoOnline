@@ -1,8 +1,8 @@
 package cl.videojuego.usuario_service.controller;
 
+import cl.videojuego.usuario_service.dto.ApiResponsev1;
 import cl.videojuego.usuario_service.dto.UsuarioDTO;
 import cl.videojuego.usuario_service.dto.UsuarioRegistroDTO;
-import cl.videojuego.usuario_service.dto.ApiResponsev1;
 import cl.videojuego.usuario_service.model.EstadoUsuario;
 import cl.videojuego.usuario_service.model.Rol;
 import cl.videojuego.usuario_service.service.EstadoUsuarioService;
@@ -10,7 +10,9 @@ import cl.videojuego.usuario_service.service.RolService;
 import cl.videojuego.usuario_service.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,247 +24,611 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Controlador REST para la gestiÃ³n de usuarios, roles y estados.
- * Base URL: /api/usuarios
- */
 @RestController
 @RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
-@Tag(name = "Usuarios", description = "Operaciones relacionadas con usuarios, roles y estados del sistema de videojuegos")
+@Tag(
+        name = "Usuarios",
+        description = "API para la gestión de usuarios, roles y estados del sistema de videojuegos"
+)
 public class UsuarioController {
 
         private final UsuarioService usuarioService;
         private final RolService rolService;
         private final EstadoUsuarioService estadoUsuarioService;
 
-        // Listar Usuarios
-        @Operation(summary = "Listar todos los usuarios", description = "Retorna una lista completa con todos los usuarios registrados en el sistema.")
+        @Operation(
+                summary = "Listar usuarios",
+                description = "Retorna una lista completa con todos los usuarios registrados en el sistema."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuarios listados correctamente"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuarios listados correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(
+                                        schema = @Schema(implementation = UsuarioDTO.class)
+                                )
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping
         public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarUsuarios() {
-                return ResponseEntity
-                                .ok(ApiResponsev1.success(usuarioService.listarUsuarios(),
-                                                "Usuarios listados exitosamente"));
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(usuarioService.listarUsuarios(), "Usuarios listados exitosamente")
+                );
         }
 
-        // Buscar Usuario por ID
-
-        @Operation(summary = "Buscar usuario por ID", description = "Obtiene los datos de un usuario especÃ­fico mediante su identificador.")
+        @Operation(
+                summary = "Buscar usuario por ID",
+                description = "Obtiene la información detallada de un usuario mediante su identificador único."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuario encontrado correctamente"),
-                        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuario encontrado correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = UsuarioDTO.class)
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "Usuario no encontrado",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/{idUsuario}")
-        public ResponseEntity<ApiResponsev1<UsuarioDTO>> buscarUsuarioPorId(
-                        @PathVariable Long idUsuario) {
-                return ResponseEntity
-                                .ok(ApiResponsev1.success(usuarioService.buscarPorId(idUsuario),
-                                                "Usuario encontrado exitosamente"));
+        public ResponseEntity<ApiResponsev1<UsuarioDTO>> buscarPorId(
+                @Parameter(
+                        description = "Identificador único del usuario",
+                        example = "1"
+                )
+                @PathVariable Long idUsuario
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(usuarioService.buscarPorId(idUsuario), "Usuario encontrado")
+                );
         }
 
-        // Registrar Nuevo Usuario
-        @Operation(summary = "Registrar nuevo usuario", description = "Permite registrar un nuevo usuario en el sistema de videojuegos.")
+        @Operation(
+                summary = "Registrar usuario",
+                description = "Permite registrar un nuevo usuario en el sistema, asociándolo a un rol y estado existente."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente"),
-                        @ApiResponse(responseCode = "400", description = "Datos invÃ¡lidos"),
-                        @ApiResponse(responseCode = "404", description = "Rol o estado de usuario no encontrado"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "201",
+                        description = "Usuario registrado correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = UsuarioDTO.class)
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "400",
+                        description = "Datos inválidos enviados en la solicitud",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "Rol o estado de usuario no encontrado",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @PostMapping
-        public ResponseEntity<ApiResponsev1<UsuarioDTO>> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO dto) {
+        public ResponseEntity<ApiResponsev1<UsuarioDTO>> registrarUsuario(
+                @Valid @RequestBody UsuarioRegistroDTO dto
+        ) {
                 return ResponseEntity.status(HttpStatus.CREATED)
-                                .body(ApiResponsev1.success(usuarioService.registrarUsuario(dto),
-                                                "Usuario registrado exitosamente"));
+                        .body(ApiResponsev1.success(
+                                usuarioService.registrarUsuario(dto),
+                                "Usuario registrado exitosamente"
+                        ));
         }
 
-        // Actualizar Usuario
-
-        @Operation(summary = "Actualizar usuario", description = "Permite modificar los datos de un usuario existente.")
+        @Operation(
+                summary = "Actualizar usuario",
+                description = "Permite modificar la información de un usuario existente."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente"),
-                        @ApiResponse(responseCode = "400", description = "Datos invÃ¡lidos"),
-                        @ApiResponse(responseCode = "404", description = "Usuario, rol o estado no encontrado"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuario actualizado correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = UsuarioDTO.class)
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "400",
+                        description = "Datos inválidos enviados en la solicitud",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "Usuario, rol o estado no encontrado",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
-
         @PutMapping("/{idUsuario}")
         public ResponseEntity<ApiResponsev1<UsuarioDTO>> actualizarUsuario(
-                        @PathVariable Long idUsuario,
-                        @Valid @RequestBody UsuarioRegistroDTO dto) {
-                return ResponseEntity.ok(ApiResponsev1.success(usuarioService.actualizarUsuario(idUsuario, dto),
-                                "Usuario actualizado exitosamente"));
+                @Parameter(
+                        description = "Identificador único del usuario",
+                        example = "1"
+                )
+                @PathVariable Long idUsuario,
+
+                @Valid @RequestBody UsuarioRegistroDTO dto
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(
+                                usuarioService.actualizarUsuario(idUsuario, dto),
+                                "Usuario actualizado exitosamente"
+                        )
+                );
         }
 
-        // Eliminar un Usuario del Sistema
-
-        @Operation(summary = "Eliminar usuario", description = "Elimina un usuario del sistema mediante su identificador.")
+        @Operation(
+                summary = "Eliminar usuario",
+                description = "Elimina un usuario existente mediante su identificador."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuario eliminado correctamente"),
-                        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuario eliminado correctamente",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "Usuario no encontrado",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @DeleteMapping("/{idUsuario}")
-        public ResponseEntity<ApiResponsev1<Void>> eliminarUsuario(@PathVariable Long idUsuario) {
+        public ResponseEntity<ApiResponsev1<Void>> eliminarUsuario(
+                @Parameter(
+                        description = "Identificador único del usuario",
+                        example = "1"
+                )
+                @PathVariable Long idUsuario
+        ) {
                 usuarioService.eliminarUsuario(idUsuario);
-                return ResponseEntity.ok(ApiResponsev1.success(null, "Usuario eliminado exitosamente"));
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(null, "Usuario eliminado exitosamente")
+                );
         }
 
-        // Actualizar Rol y Estado
-
-        @Operation(summary = "Actualizar rol y estado de usuario", description = "Permite cambiar el rol y el estado de un usuario existente.")
+        @Operation(
+                summary = "Actualizar rol y estado",
+                description = "Permite modificar el rol y el estado de un usuario existente."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Rol y estado actualizados correctamente"),
-                        @ApiResponse(responseCode = "404", description = "Usuario, rol o estado no encontrado"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Rol y estado actualizados correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = UsuarioDTO.class)
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "Usuario, rol o estado no encontrado",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @PutMapping("/{idUsuario}/rol-estado")
         public ResponseEntity<ApiResponsev1<UsuarioDTO>> actualizarRolYEstado(
-                        @PathVariable Long idUsuario,
-                        @RequestParam Long idRol,
-                        @RequestParam Long idEstadoUsuario) {
-                return ResponseEntity.ok(ApiResponsev1.success(
+                @Parameter(
+                        description = "Identificador único del usuario",
+                        example = "1"
+                )
+                @PathVariable Long idUsuario,
+
+                @Parameter(
+                        description = "Nuevo identificador del rol",
+                        example = "2"
+                )
+                @RequestParam Long idRol,
+
+                @Parameter(
+                        description = "Nuevo identificador del estado del usuario",
+                        example = "1"
+                )
+                @RequestParam Long idEstadoUsuario
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(
                                 usuarioService.actualizarRolYEstado(idUsuario, idRol, idEstadoUsuario),
-                                "Rol y estado actualizados"));
+                                "Rol y estado actualizados"
+                        )
+                );
         }
 
-        // Buscar Usuario por Correo
-
-        @Operation(summary = "Buscar usuario por correo", description = "Busca un usuario utilizando su correo electrÃ³nico.")
+        @Operation(
+                summary = "Buscar usuario por correo",
+                description = "Busca un usuario registrado utilizando su correo electrónico."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuario encontrado correctamente"),
-                        @ApiResponse(responseCode = "404", description = "Usuario no encontrado"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuario encontrado correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = UsuarioDTO.class)
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "Usuario no encontrado",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/buscar-por-correo")
         public ResponseEntity<ApiResponsev1<UsuarioDTO>> buscarPorCorreo(
-                        @Parameter(description = "Correo electrÃ³nico del usuario", example = "lizz123@correo.cl") @RequestParam String correo) {
+                @Parameter(
+                        description = "Correo electrónico del usuario",
+                        example = "jugador@correo.cl"
+                )
+                @RequestParam String correo
+        ) {
                 return ResponseEntity.ok(
-                                ApiResponsev1.success(usuarioService.buscarPorCorreo(correo), "Usuario encontrado"));
+                        ApiResponsev1.success(usuarioService.buscarPorCorreo(correo), "Usuario encontrado")
+                );
         }
 
-        // Buscar Usuario por rol
-        @Operation(summary = "Listar usuarios por rol", description = "Retorna todos los usuarios asociados a un rol especÃ­fico.")
+        @Operation(
+                summary = "Listar usuarios por rol",
+                description = "Retorna todos los usuarios asociados a un rol específico."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuarios por rol obtenidos correctamente"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuarios por rol encontrados",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(
+                                        schema = @Schema(implementation = UsuarioDTO.class)
+                                )
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/rol/{idRol}")
         public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarPorRol(
-                        @Parameter(description = "Identificador del rol", example = "1") @PathVariable Long idRol) {
-                return ResponseEntity.ok(ApiResponsev1.success(usuarioService.listarPorRol(idRol),
-                                "Usuarios por rol encontrados"));
+                @Parameter(
+                        description = "Identificador del rol",
+                        example = "1"
+                )
+                @PathVariable Long idRol
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(usuarioService.listarPorRol(idRol), "Usuarios por rol encontrados")
+                );
         }
 
-        // Listar Usuario por Estado
-        @Operation(summary = "Listar usuarios por estado", description = "Retorna todos los usuarios filtrados por estado.")
+        @Operation(
+                summary = "Listar usuarios por estado",
+                description = "Retorna todos los usuarios asociados a un estado específico."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuarios por estado obtenidos correctamente"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuarios por estado encontrados",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(
+                                        schema = @Schema(implementation = UsuarioDTO.class)
+                                )
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/estado/{idEstadoUsuario}")
         public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarPorEstado(
-                        @Parameter(description = "Identificador del estado del usuario", example = "1") @PathVariable Long idEstadoUsuario) {
-                return ResponseEntity.ok(ApiResponsev1.success(usuarioService.listarPorEstado(idEstadoUsuario),
-                                "Usuarios por estado encontrados"));
+                @Parameter(
+                        description = "Identificador del estado del usuario",
+                        example = "1"
+                )
+                @PathVariable Long idEstadoUsuario
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(usuarioService.listarPorEstado(idEstadoUsuario), "Usuarios por estado encontrados")
+                );
         }
 
-        // Listar Usuario por nivel de cuenta
-        @Operation(summary = "Listar usuarios por nivel de cuenta", description = "Retorna todos los usuarios que poseen un nivel de cuenta especÃ­fico.")
+        @Operation(
+                summary = "Listar usuarios por nivel de cuenta",
+                description = "Retorna todos los usuarios que poseen un nivel de cuenta específico."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuarios por nivel obtenidos correctamente"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuarios por nivel encontrados",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(
+                                        schema = @Schema(implementation = UsuarioDTO.class)
+                                )
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/nivel/{nivelCuenta}")
         public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarPorNivel(
-                        @Parameter(description = "Nivel de cuenta del usuario", example = "10") @PathVariable Integer nivelCuenta) {
-                return ResponseEntity.ok(ApiResponsev1.success(usuarioService.listarPorNivel(nivelCuenta),
-                                "Usuarios por nivel encontrados"));
+                @Parameter(
+                        description = "Nivel de cuenta del usuario",
+                        example = "1"
+                )
+                @PathVariable Integer nivelCuenta
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(usuarioService.listarPorNivel(nivelCuenta), "Usuarios por nivel encontrados")
+                );
         }
 
-        // Registrar usuario despuies de una fecha
-        @Operation(summary = "Listar usuarios registrados despuÃ©s de una fecha", description = "Retorna usuarios cuya fecha de registro sea posterior a la fecha indicada.")
+        @Operation(
+                summary = "Listar usuarios registrados después de una fecha",
+                description = "Retorna usuarios cuya fecha de registro sea posterior a la fecha indicada."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuarios encontrados correctamente"),
-                        @ApiResponse(responseCode = "400", description = "Formato de fecha invÃ¡lido"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuarios encontrados correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(
+                                        schema = @Schema(implementation = UsuarioDTO.class)
+                                )
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "400",
+                        description = "Formato de fecha inválido",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/registrados-despues")
         public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarRegistradosDespuesDe(
-                        @Parameter(description = "Fecha desde la cual se buscarÃ¡n usuarios", example = "2026-06-01") @RequestParam LocalDate fecha) {
-                return ResponseEntity.ok(ApiResponsev1.success(usuarioService.listarRegistradosDespuesDe(fecha),
-                                "Usuarios registrados despuÃ©s de la fecha encontrados"));
+                @Parameter(
+                        description = "Fecha mínima de registro en formato ISO yyyy-MM-dd",
+                        example = "2026-06-01"
+                )
+                @RequestParam LocalDate fecha
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(
+                                usuarioService.listarRegistradosDespuesDe(fecha),
+                                "Usuarios registrados después de la fecha encontrados"
+                        )
+                );
         }
 
-        // Buscar Por fecha de Registro
-        @Operation(summary = "Buscar usuarios por fecha de registro", description = "Retorna usuarios registrados exactamente en la fecha indicada.")
+        @Operation(
+                summary = "Buscar usuarios por fecha de registro",
+                description = "Retorna usuarios registrados exactamente en la fecha indicada."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Usuarios encontrados correctamente"),
-                        @ApiResponse(responseCode = "400", description = "Formato de fecha invÃ¡lido"),
-                        @ApiResponse(responseCode = "404", description = "No hay usuarios registrados en esa fecha"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Usuarios encontrados por fecha",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(
+                                        schema = @Schema(implementation = UsuarioDTO.class)
+                                )
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "400",
+                        description = "Formato de fecha inválido",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "No hay usuarios registrados en la fecha indicada",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/buscar-por-fecha")
         public ResponseEntity<ApiResponsev1<List<UsuarioDTO>>> listarPorFecha(
-                        @Parameter(description = "Fecha exacta de registro", example = "2026-06-01") @RequestParam LocalDate fecha) {
+                @Parameter(
+                        description = "Fecha exacta de registro en formato ISO yyyy-MM-dd",
+                        example = "2026-06-01"
+                )
+                @RequestParam LocalDate fecha
+        ) {
                 List<UsuarioDTO> usuarios = usuarioService.listarPorFechaVerificandoResultados(fecha);
-                return ResponseEntity.ok(ApiResponsev1.success(usuarios, "Usuarios encontrados por fecha"));
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(usuarios, "Usuarios encontrados por fecha")
+                );
         }
 
-        // Listar por Roles
-        @Operation(summary = "Listar roles", description = "Retorna todos los roles disponibles para los usuarios.")
+        @Operation(
+                summary = "Listar roles",
+                description = "Retorna todos los roles disponibles para los usuarios del sistema."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Roles listados correctamente"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Roles listados correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(
+                                        schema = @Schema(implementation = Rol.class)
+                                )
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
-
         @GetMapping("/roles")
         public ResponseEntity<ApiResponsev1<List<Rol>>> listarRoles() {
-                return ResponseEntity
-                                .ok(ApiResponsev1.success(rolService.listarRoles(), "Roles listados exitosamente"));
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(rolService.listarRoles(), "Roles listados exitosamente")
+                );
         }
 
-        // Buscar Roll por ID
-        @Operation(summary = "Buscar rol por ID", description = "Obtiene la informaciÃ³n de un rol especÃ­fico mediante su identificador.")
+        @Operation(
+                summary = "Buscar rol por ID",
+                description = "Obtiene la información de un rol específico mediante su identificador."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Rol encontrado correctamente"),
-                        @ApiResponse(responseCode = "404", description = "Rol no encontrado"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Rol encontrado correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = Rol.class)
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "Rol no encontrado",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/roles/{idRol}")
         public ResponseEntity<ApiResponsev1<Rol>> buscarRolPorId(
-                        @Parameter(description = "Nuevo rol del usuario", example = "2") @PathVariable Long idRol) {
-                return ResponseEntity.ok(ApiResponsev1.success(rolService.buscarPorId(idRol), "Rol encontrado"));
+                @Parameter(
+                        description = "Identificador único del rol",
+                        example = "1"
+                )
+                @PathVariable Long idRol
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(rolService.buscarPorId(idRol), "Rol encontrado")
+                );
         }
 
-        // Listar Usuarios ID
-        @Operation(summary = "Listar estados de usuario", description = "Retorna todos los estados disponibles para los usuarios.")
+        @Operation(
+                summary = "Listar estados de usuario",
+                description = "Retorna todos los estados disponibles para los usuarios del sistema."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Estados listados correctamente"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Estados listados correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                array = @ArraySchema(
+                                        schema = @Schema(implementation = EstadoUsuario.class)
+                                )
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/estados")
         public ResponseEntity<ApiResponsev1<List<EstadoUsuario>>> listarEstados() {
-                return ResponseEntity
-                                .ok(ApiResponsev1.success(estadoUsuarioService.listarEstados(),
-                                                "Estados listados exitosamente"));
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(estadoUsuarioService.listarEstados(), "Estados listados exitosamente")
+                );
         }
 
-        // Buscar Estado de Usuario por id
-        @Operation(summary = "Buscar estado de usuario por ID", description = "Obtiene la informaciÃ³n de un estado de usuario especÃ­fico mediante su identificador.")
+        @Operation(
+                summary = "Buscar estado de usuario por ID",
+                description = "Obtiene la información de un estado de usuario específico mediante su identificador."
+        )
         @ApiResponses({
-                        @ApiResponse(responseCode = "200", description = "Estado encontrado correctamente"),
-                        @ApiResponse(responseCode = "404", description = "Estado no encontrado"),
-                        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "200",
+                        description = "Estado encontrado correctamente",
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = EstadoUsuario.class)
+                        )
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "404",
+                        description = "Estado no encontrado",
+                        content = @Content
+                ),
+                @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                        responseCode = "500",
+                        description = "Error interno del servidor",
+                        content = @Content
+                )
         })
         @GetMapping("/estados/{idEstadoUsuario}")
         public ResponseEntity<ApiResponsev1<EstadoUsuario>> buscarEstadoPorId(
-                        @Parameter(description = "Nuevo estado del usuario", example = "1") @PathVariable Long idEstadoUsuario) {
-                return ResponseEntity.ok(ApiResponsev1.success(estadoUsuarioService.buscarPorId(idEstadoUsuario),
-                                "Estado encontrado"));
+                @Parameter(
+                        description = "Identificador único del estado de usuario",
+                        example = "1"
+                )
+                @PathVariable Long idEstadoUsuario
+        ) {
+                return ResponseEntity.ok(
+                        ApiResponsev1.success(estadoUsuarioService.buscarPorId(idEstadoUsuario), "Estado encontrado")
+                );
         }
 }
