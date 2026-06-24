@@ -14,7 +14,7 @@
 * **Solución del proyecto:** Una arquitectura distribuida de microservicios desarrollada con Java 21, Spring Boot y Spring Cloud. Cada dominio de negocio (e.g., Combate, Inventario, Usuario) está aislado con su propio esquema de base de datos MySQL (Database-per-Service). Todo el tráfico externo no ingresa directamente a los servicios, sino que es orquestado, filtrado y enrutado de forma centralizada y segura a través de un API Gateway.
 
 ### Créditos
-* **Integrantes del equipo:** Juan Varas *(Modificar si existen más integrantes)*
+* **Integrantes del equipo:** Juan Varas || Elizabeth Reyes || Scarlett Riquelme 
 
 ### Arquitectura
 El sistema implementa 12 microservicios en total, divididos en dos capas:
