@@ -12,6 +12,7 @@ import cl.videojuego.inventario_service.repository.InventarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import cl.videojuego.inventario_service.exception.RecursoNoEncontradoException;
+import cl.videojuego.inventario_service.exception.ConflictoNegocioException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,6 +41,10 @@ public class InventarioService {
     public InventarioDTO registrar(InventarioRegistroDTO dto) {
 
         PersonajeDTO personaje = personajeClient.buscarPersonajePorId(dto.getIdPersonaje());
+
+        if (inventarioRepository.existsByIdPersonaje(dto.getIdPersonaje())) {
+            throw new ConflictoNegocioException("El personaje con ID " + dto.getIdPersonaje() + " ya tiene un inventario.");
+        }
 
         EstadoInventario estado = estadoInventarioRepository.findById(dto.getIdEstadoInventario())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Estado de inventario no encontrado"));

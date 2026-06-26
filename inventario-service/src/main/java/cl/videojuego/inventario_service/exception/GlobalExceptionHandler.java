@@ -26,6 +26,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ConflictoNegocioException.class)
+    public ResponseEntity<ErrorResponse> handleConflictoNegocio(ConflictoNegocioException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "CONFLICT",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(ReferenciaItemInvalidaException.class)
     public ResponseEntity<ErrorResponse> handleReferenciaItemInvalida(ReferenciaItemInvalidaException ex) {
         log.error("Referencia de ítem inválida: {}", ex.getMessage(), ex);

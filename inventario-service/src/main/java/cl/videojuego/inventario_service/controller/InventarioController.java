@@ -84,7 +84,14 @@ public class InventarioController {
                       "equipado": false
                     }
                     """))),
-            @ApiResponse(responseCode = "400", description = "Petición inválida (Bad Request)"),
+            @ApiResponse(responseCode = "400", description = "Petición inválida (Bad Request)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class), examples = @ExampleObject(value = """
+                    {
+                      "status": 400,
+                      "error": "Validation Error",
+                      "message": "La cantidad es obligatoria",
+                      "timestamp": "2026-06-26T03:06:37.9577004"
+                    }
+                    """))),
             @ApiResponse(responseCode = "409", description = "Conflicto de negocio", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class), examples = @ExampleObject(value = """
                     {
                       "status": 409,

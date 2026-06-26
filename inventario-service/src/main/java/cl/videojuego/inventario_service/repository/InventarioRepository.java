@@ -11,4 +11,6 @@ public interface InventarioRepository
     List<Inventario> findByIdPersonaje(Long idPersonaje);
 
     List<Inventario> findByEstadoInventario_IdEstadoInventario(Long idEstadoInventario);
+
+    boolean existsByIdPersonaje(Long idPersonaje);
 }
