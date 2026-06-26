@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @OpenAPIDefinition(
 		info = @Info(
 				title = "API Videojuegos - Tienda Service",
-				version = "1.0.0",
+				version = "1.52.0",
 				description = "Microservicio encargado de la gestión de productos de la tienda del videojuego. Permite registrar, consultar y filtrar productos por categoría, estado, precio, nombre y stock. Además puede validar información de armas mediante comunicación entre microservicios.",
 				contact = @Contact(
 						name = "Elizabeth Reyes",

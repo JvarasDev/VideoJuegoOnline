@@ -134,6 +134,7 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+    custom-css-url: /theme-jsoc.css
     urls:
       - name: 01. Arma Service
         url: /v3/api-docs/arma-service
@@ -158,8 +159,6 @@ eureka:
   client:
     register-with-eureka: true
     registry-fetch-interval-seconds: 5
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
 
 management:
   endpoints:
@@ -177,3 +176,23 @@ logging:
     org.springframework.web.reactive: DEBUG
     reactor.netty: DEBUG
     com.netflix.discovery: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/

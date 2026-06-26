@@ -14,6 +14,7 @@ import cl.videojuego.combate_service.repository.TipoCombateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import cl.videojuego.combate_service.exception.RecursoNoEncontradoException;
 import cl.videojuego.combate_service.exception.ResultadoCombateInvalidoException;
 
 import java.time.LocalDateTime;
@@ -73,36 +74,51 @@ public class CombateService {
     }
 
     public List<CombateDTO> listarPorAtacante(Long idPersonaje) {
-        return combateRepository.findByIdPersonajeAtacante(idPersonaje)
-                .stream()
+        List<Combate> combates = combateRepository.findByIdPersonajeAtacante(idPersonaje);
+        if (combates.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron combates para el atacante con ID: " + idPersonaje);
+        }
+        return combates.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
 
     public List<CombateDTO> listarPorDefensor(Long idPersonaje) {
-        return combateRepository.findByIdPersonajeDefensor(idPersonaje)
-                .stream()
+        List<Combate> combates = combateRepository.findByIdPersonajeDefensor(idPersonaje);
+        if (combates.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron combates para el defensor con ID: " + idPersonaje);
+        }
+        return combates.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
 
     public List<CombateDTO> listarPorGanador(Long idGanador) {
-        return combateRepository.findByIdGanador(idGanador)
-                .stream()
+        List<Combate> combates = combateRepository.findByIdGanador(idGanador);
+        if (combates.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron combates para el ganador con ID: " + idGanador);
+        }
+        return combates.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
 
     public List<CombateDTO> listarPorTipo(Long idTipoCombate) {
-        return combateRepository.findByTipoCombate_IdTipoCombate(idTipoCombate)
-                .stream()
+        List<Combate> combates = combateRepository.findByTipoCombate_IdTipoCombate(idTipoCombate);
+        if (combates.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron combates para el tipo con ID: " + idTipoCombate);
+        }
+        return combates.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
 
     public List<CombateDTO> listarPorEstado(Long idEstadoCombate) {
-        return combateRepository.findByEstadoCombate_IdEstadoCombate(idEstadoCombate)
-                .stream()
+        List<Combate> combates = combateRepository.findByEstadoCombate_IdEstadoCombate(idEstadoCombate);
+        if (combates.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron combates para el estado con ID: " + idEstadoCombate);
+        }
+        return combates.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }

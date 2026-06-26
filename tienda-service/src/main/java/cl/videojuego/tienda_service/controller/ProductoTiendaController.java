@@ -58,13 +58,12 @@ public class ProductoTiendaController {
                             examples = @ExampleObject(
                                     value = """
                                     {
-                                      "status": 500,
-                                      "error": "Internal Server Error",
-                                      "errorCode": "ERR_INTERNAL_500",
-                                      "mensaje": "Error al listar los productos",
-                                      "path": "/api/productos",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "errorCode": "INTERNAL_ERROR",
+                                              "mensaje": "Error! Capa 8",
+                                              "timestamp": "2026-06-26T01:57:12"
+                                              }
                                     """
                             )
                     )
@@ -96,20 +95,19 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 400,
-                                      "error": "Bad Request",
-                                      "errorCode": "ERR_BAD_REQUEST_400",
-                                      "mensaje": "Error de validación",
-                                      "path": "/api/productos",
-                                      "timestamp": "2026-06-24T02:26:31",
-                                      "errores": [
-                                        {
-                                          "campo": "precio",
-                                          "mensaje": "El precio es obligatorio"
-                                        }
-                                      ]
-                                    }
+                                            {
+                                                      "status": 400,
+                                                      "error": "Bad Request",
+                                                      "errorCode": "VALIDATION_ERROR",
+                                                      "mensaje": "Error de validación en los campos del request",
+                                                      "timestamp": "2026-06-26T02:03:23",
+                                                      "errores": [
+                                                        {
+                                                          "campo": "stock",
+                                                          "mensaje": "El stock es obligatorio"
+                                                        }
+                                                      ]
+                                                    }
                                     """
                             )
                     )
@@ -122,14 +120,12 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 404,
-                                      "error": "Not Found",
-                                      "errorCode": "ERR_NOT_FOUND_404",
-                                      "mensaje": "Categoría no encontrada",
-                                      "path": "/api/productos",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                            {
+                                              "status": 404,
+                                              "error": "Not Found",
+                                              "message": "No encontrado T_T",
+                                              "timestamp": "2026-06-26T01:47:26.753242"
+                                            }
                                     """
                             )
                     )
@@ -142,14 +138,13 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 500,
-                                      "error": "Internal Server Error",
-                                      "errorCode": "ERR_INTERNAL_500",
-                                      "mensaje": "Error al registrar el producto",
-                                      "path": "/api/productos",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                           {
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "errorCode": "INTERNAL_ERROR",
+                                              "mensaje": "Error! Capa 8",
+                                              "timestamp": "2026-06-26T01:57:12"
+                                              }
                                     """
                             )
                     )
@@ -188,13 +183,12 @@ public class ProductoTiendaController {
                             examples = @ExampleObject(
                                     value = """
                                     {
-                                      "status": 500,
-                                      "error": "Internal Server Error",
-                                      "errorCode": "ERR_INTERNAL_500",
-                                      "mensaje": "Error al listar productos por categoría",
-                                      "path": "/api/productos/categoria/1",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "errorCode": "INTERNAL_ERROR",
+                                              "mensaje": "Error! Capa 8",
+                                              "timestamp": "2026-06-26T01:57:12"
+                                              }
                                     """
                             )
                     )
@@ -235,13 +229,12 @@ public class ProductoTiendaController {
                             examples = @ExampleObject(
                                     value = """
                                     {
-                                      "status": 500,
-                                      "error": "Internal Server Error",
-                                      "errorCode": "ERR_INTERNAL_500",
-                                      "mensaje": "Error al listar productos por estado",
-                                      "path": "/api/productos/estado/1",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "errorCode": "INTERNAL_ERROR",
+                                              "mensaje": "Error! Capa 8",
+                                              "timestamp": "2026-06-26T01:57:12"
+                                              }
                                     """
                             )
                     )
@@ -281,14 +274,13 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 400,
-                                      "error": "Bad Request",
-                                      "errorCode": "ERR_BAD_REQUEST_400",
-                                      "mensaje": "El precio máximo no puede ser negativo",
-                                      "path": "/api/productos/precio-menor",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                            {
+                                                      "status": 400,
+                                                      "error": "Bad Request",
+                                                      "errorCode": "PRECIO_NEGATIVO",
+                                                      "mensaje": "El precio del producto no puede ser negativo.",
+                                                      "timestamp": "2026-06-26T02:04:05"
+                                                    }
                                     """
                             )
                     )
@@ -301,14 +293,13 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 500,
-                                      "error": "Internal Server Error",
-                                      "errorCode": "ERR_INTERNAL_500",
-                                      "mensaje": "Error al buscar productos por precio",
-                                      "path": "/api/productos/precio-menor",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                   {
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "errorCode": "INTERNAL_ERROR",
+                                              "mensaje": "Error! Capa 8",
+                                              "timestamp": "2026-06-26T01:57:12"
+                                              }
                                     """
                             )
                     )
@@ -348,14 +339,13 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 500,
-                                      "error": "Internal Server Error",
-                                      "errorCode": "ERR_INTERNAL_500",
-                                      "mensaje": "Error al buscar productos por nombre",
-                                      "path": "/api/productos/buscar-por-nombre",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                  {
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "errorCode": "INTERNAL_ERROR",
+                                              "mensaje": "Error! Capa 8",
+                                              "timestamp": "2026-06-26T01:57:12"
+                                              }
                                     """
                             )
                     )
@@ -396,13 +386,12 @@ public class ProductoTiendaController {
                             examples = @ExampleObject(
                                     value = """
                                     {
-                                      "status": 400,
-                                      "error": "Bad Request",
-                                      "errorCode": "ERR_BAD_REQUEST_400",
-                                      "mensaje": "El stock no puede ser negativo",
-                                      "path": "/api/productos/stock-mayor",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                              "status": 400,
+                                              "error": "Bad Request",
+                                              "errorCode": "STOCK_NEGATIVO",
+                                              "mensaje": "capa 8, T_T",
+                                              "timestamp": "2026-06-26T02:00:57"
+                                            }
                                     """
                             )
                     )
@@ -415,14 +404,13 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 500,
-                                      "error": "Internal Server Error",
-                                      "errorCode": "ERR_INTERNAL_500",
-                                      "mensaje": "Error al listar productos con stock mayor a X",
-                                      "path": "/api/productos/stock-mayor",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                {
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "errorCode": "INTERNAL_ERROR",
+                                              "mensaje": "Error! Capa 8",
+                                              "timestamp": "2026-06-26T01:57:12"
+                                              }
                                     """
                             )
                     )
@@ -460,14 +448,13 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 404,
-                                      "error": "Not Found",
-                                      "errorCode": "ERR_NOT_FOUND_404",
-                                      "mensaje": "Producto con ID 1 no encontrado",
-                                      "path": "/api/productos/1",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                            {
+                                              "status": 404,
+                                              "error": "Not Found",
+                                              "errorCode": "PRODUCTO_NO_ENCONTRADO",
+                                              "mensaje": "No se encontró el producto",
+                                              "timestamp": "2026-06-26T01:56:05"
+                                            }
                                     """
                             )
                     )
@@ -480,14 +467,13 @@ public class ProductoTiendaController {
                             schema = @Schema(implementation = ApiError.class),
                             examples = @ExampleObject(
                                     value = """
-                                    {
-                                      "status": 500,
-                                      "error": "Internal Server Error",
-                                      "errorCode": "ERR_INTERNAL_500",
-                                      "mensaje": "Error interno del servidor",
-                                      "path": "/api/productos/1",
-                                      "timestamp": "2026-06-24T02:26:31"
-                                    }
+                                            {
+                                              "status": 500,
+                                              "error": "Internal Server Error",
+                                              "errorCode": "INTERNAL_ERROR",
+                                              "mensaje": "Error! Capa 8",
+                                              "timestamp": "2026-06-26T01:57:12"
+                                              }
                                     """
                             )
                     )

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>JSOC // DOCS</title>
+    <style>
+        /* --- NATIVE FEEL ENHANCEMENTS --- */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+        }
+        .code-box, .url, .console-line {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        body {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: none;
+        }
+        .cmd-btn:active {
+            transform: scale(0.95) !important;
+            transition: transform 0.1s !important;
+            opacity: 0.8;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&display=swap');
+
+        :root {
+            --sat-black: #02060a;
+            --panel-bg: rgba(6, 15, 25, 0.7);
+            --mw-white: #e2e8f0;
+            --mw-cyan: #00f0ff;
+            --mw-cyan-dim: rgba(0, 240, 255, 0.15);
+            --mw-gray: #829ab1;
+            --mw-red: #ff2a2a;
+            --mw-green: #39ff14;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair !important;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--sat-black);
+            border-left: 1px solid var(--mw-cyan-dim);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--mw-cyan);
+        }
+
+        body {
+            background-color: var(--sat-black);
+            color: var(--mw-gray);
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* BACKGROUND OVERLAYS */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0px, rgba(0, 0, 0, 0.2) 1px, transparent 1px, transparent 3px);
+            z-index: 9998;
+            pointer-events: none;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0, 0, 0, 0.95) 100%);
+            z-index: 9997;
+            pointer-events: none;
+        }
+
+        .bg-watermark {
+            position: fixed;
+            top: 50%;
+            left: 60%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            width: 80vw;
+            height: 80vw;
+            border-radius: 50%;
+            border: 1px dashed var(--mw-cyan-dim);
+            z-index: 1;
+            opacity: 0.15;
+            pointer-events: none;
+            animation: spinRotate 200s linear infinite;
+        }
+
+        .bg-watermark::before {
+            content: '+';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--mw-cyan);
+            font-size: 5rem;
+        }
+
+        @keyframes spinRotate {
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* HEADER */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid var(--mw-cyan);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 5px 30px rgba(0, 240, 255, 0.1);
+        }
+
+        .header-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            color: var(--mw-white);
+            letter-spacing: 8px;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+        }
+
+        .header-status {
+            margin-left: auto;
+            color: var(--mw-cyan);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--mw-cyan);
+            box-shadow: 0 0 15px var(--mw-cyan);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* MAIN LAYOUT */
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: 100vh;
+            padding-top: 70px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* SIDEBAR */
+        nav {
+            background: rgba(2, 6, 12, 0.85);
+            border-right: 1px solid var(--mw-cyan-dim);
+            padding: 40px 0;
+            height: calc(100vh - 70px);
+            position: sticky;
+            top: 70px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-title {
+            padding: 0 30px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            color: var(--mw-gray);
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav a {
+            display: flex;
+            align-items: center;
+            padding: 18px 30px;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            color: var(--mw-gray);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        nav a:hover::before {
+            left: 100%;
+        }
+
+        nav a:hover {
+            color: var(--mw-white);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        nav .active {
+            border-left-color: var(--mw-cyan);
+            color: var(--mw-cyan);
+            background: rgba(0, 240, 255, 0.1);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            font-weight: bold;
+        }
+
+        nav .active::after {
+            content: '◄';
+            position: absolute;
+            right: 20px;
+            color: var(--mw-cyan);
+            animation: slideLeft 1s infinite;
+        }
+
+        @keyframes slideLeft {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(-5px);
+            }
+        }
+
+        /* CONTENT */
+        main {
+            padding: 50px 80px;
+            max-width: 1400px;
+            position: relative;
+        }
+
+        .section {
+            background: var(--panel-bg);
+            border: 1px solid var(--mw-cyan-dim);
+            padding: 50px;
+            margin-bottom: 50px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 1, 0.2, 1) forwards;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tactical Brackets */
+        .section::before,
+        .section::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--mw-cyan);
+            transition: all 0.3s;
+        }
+
+        .section::before {
+            top: -1px;
+            left: -1px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .section::after {
+            bottom: -1px;
+            right: -1px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .section:hover::before,
+        .section:hover::after {
+            width: 40px;
+            height: 40px;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            color: var(--mw-white);
+            letter-spacing: 6px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+
+        .section-title::before {
+            content: '';
+            width: 10px;
+            height: 40px;
+            background: var(--mw-cyan);
+            box-shadow: 0 0 15px var(--mw-cyan);
+        }
+
+        .text-block {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #94a3b8;
+        }
+
+        .text-block strong {
+            color: var(--mw-white);
+            background: rgba(0, 240, 255, 0.15);
+            padding: 2px 6px;
+            border-radius: 3px;
+            border-bottom: 1px solid var(--mw-cyan);
+        }
+
+        /* CARDS / ENDPOINTS */
+        .endpoint-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--mw-cyan-dim);
+            padding: 25px;
+            margin-bottom: 20px;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .endpoint-card:hover {
+            transform: translateX(10px);
+            border-color: var(--mw-cyan);
+            box-shadow: -5px 0 20px rgba(0, 240, 255, 0.2);
+        }
+
+        .endpoint-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--mw-cyan);
+        }
+
+        .method {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 2px;
+            margin-right: 15px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .method.get {
+            background: rgba(57, 255, 20, 0.1);
+            color: var(--mw-green);
+            border: 1px solid var(--mw-green);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+        }
+
+        .method.post {
+            background: rgba(255, 170, 0, 0.1);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+            box-shadow: 0 0 10px rgba(255, 170, 0, 0.2);
+        }
+
+        .url {
+            font-family: 'Share Tech Mono', monospace;
+            font-weight: bold;
+            color: var(--mw-white);
+            font-size: 1.2rem;
+        }
+
+        .desc {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: var(--mw-gray);
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
+        }
+
+        /* CODE BOX */
+        .code-box {
+            background: #010409;
+            border: 1px solid #1e293b;
+            border-left: 3px solid var(--mw-cyan);
+            padding: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            color: #38bdf8;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .code-box::before {
+            content: 'DECRYPTED PAYLOAD';
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: var(--sat-black);
+            padding: 0 10px;
+            font-size: 0.8rem;
+            color: var(--mw-cyan);
+            letter-spacing: 2px;
+            border: 1px solid var(--mw-cyan-dim);
+        }
+
+        /* ARCHITECTURE DIAGRAMS */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+            margin: 50px 0;
+            padding: 50px;
+            background: rgba(0, 240, 255, 0.02);
+            border: 1px solid var(--mw-cyan-dim);
+            position: relative;
+        }
+
+        .arch-diagram::before {
+            content: 'SYSTEM SCHEMATIC';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-family: 'Rajdhani';
+            color: var(--mw-gray);
+            letter-spacing: 3px;
+            font-size: 0.9rem;
+        }
+
+        .node {
+            padding: 20px 40px;
+            border: 2px solid var(--mw-cyan);
+            color: var(--mw-white);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            background: rgba(0, 0, 0, 0.9);
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+            transition: all 0.3s;
+            position: relative;
+            cursor: crosshair;
+        }
+
+        .node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .node.client {
+            border-color: var(--mw-white);
+        }
+
+        .node.db {
+            border-color: var(--mw-green);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+        }
+
+        .node-sub {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--mw-cyan);
+            display: block;
+            margin-top: 5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .arrow {
+            width: 3px;
+            height: 40px;
+            background: var(--mw-cyan);
+            position: relative;
+            box-shadow: 0 0 10px var(--mw-cyan);
+        }
+
+        .arrow::after {
+            content: '▼';
+            position: absolute;
+            bottom: -12px;
+            left: -7px;
+            color: var(--mw-cyan);
+            font-size: 1rem;
+            text-shadow: 0 0 10px var(--mw-cyan);
+        }
+
+        .layer-box {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            border: 2px dashed rgba(0, 240, 255, 0.3);
+            padding: 40px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .layer-title {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background: var(--sat-black);
+            padding: 0 15px;
+            color: var(--mw-cyan);
+            font-weight: bold;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            border: 1px solid var(--mw-cyan);
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--mw-gray);
+            font-size: 0.9rem;
+            margin-top: 100px;
+            padding-bottom: 50px;
+            letter-spacing: 6px;
+            opacity: 0.5;
+        }
+
+        /* IMMERSIVE HUD ELEMENTS */
+        .hud-crosshair-x {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            width: 100vw;
+            height: 1px;
+            background: rgba(0, 240, 255, 0.4);
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 10px var(--mw-cyan);
+            transition: opacity 0.2s;
+        }
+
+        .hud-crosshair-y {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 100vh;
+            background: rgba(0, 240, 255, 0.4);
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 10px var(--mw-cyan);
+            transition: opacity 0.2s;
+        }
+
+        .hud-target {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 240, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease-out;
+            box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+
+        .hud-target::after {
+            content: '';
+            position: absolute;
+            top: 48%;
+            left: 48%;
+            width: 4px;
+            height: 4px;
+            background: var(--mw-cyan);
+            border-radius: 50%;
+        }
+
+        .scanner {
+            position: fixed;
+            top: -10%;
+            left: 0;
+            width: 100vw;
+            height: 10vh;
+            background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.15), transparent);
+            animation: scan 4s linear infinite;
+            z-index: 9996;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% {
+                top: -10%;
+            }
+
+            100% {
+                top: 110%;
+            }
+        }
+
+        #bootOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #02060a;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            transition: opacity 0.5s ease;
+        }
+
+        .glitch-text {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 2.5rem;
+            color: var(--mw-cyan);
+            letter-spacing: 15px;
+            position: relative;
+            animation: glitch 1s linear infinite;
+            text-shadow: 0 0 20px var(--mw-cyan);
+            text-align: center;
+        }
+
+        @keyframes glitch {
+
+            2%,
+            64% {
+                transform: translate(2px, 0) skew(0deg);
+            }
+
+            4%,
+            60% {
+                transform: translate(-2px, 0) skew(0deg);
+            }
+
+            62% {
+                transform: translate(0, 0) skew(5deg);
+            }
+        }
+
+        @keyframes crtFlicker {
+            0% {
+                opacity: 0.98;
+            }
+
+            5% {
+                opacity: 0.90;
+                filter: contrast(1.2);
+            }
+
+            10% {
+                opacity: 0.98;
+                filter: contrast(1);
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        body {
+            animation: crtFlicker 3s infinite;
+        }
+    
+                
+                /* --- RESPONSIVE DESIGN FOR DOCS --- */
+        @media (max-width: 1024px) {
+            .container { grid-template-columns: 250px 1fr; }
+        }
+        @media (max-width: 768px) {
+            body { overflow-y: auto !important; height: auto !important; min-height: 100vh; position: static; padding-bottom: 80px; }
+            .container { grid-template-columns: 1fr; display: flex; flex-direction: column; min-height: 100vh; }
+            
+            nav { 
+                height: 70px; 
+                position: fixed; 
+                bottom: 0; 
+                top: auto;
+                left: 0;
+                width: 100%;
+                padding: 0 10px; 
+                border-right: none; 
+                border-top: 1px solid rgba(6, 182, 212, 0.3); 
+                z-index: 10000; 
+                background: rgba(2, 6, 12, 0.85); 
+                backdrop-filter: blur(20px);
+                padding-bottom: env(safe-area-inset-bottom);
+                display: flex;
+                align-items: center;
+            }
+            nav ul { 
+                display: flex; 
+                flex-wrap: nowrap; 
+                justify-content: flex-start; 
+                gap: 15px; 
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
+                padding-bottom: 5px;
+            }
+            nav ul::-webkit-scrollbar { display: none; }
+            nav a { 
+                padding: 10px 20px; 
+                font-size: 1rem; 
+                border-left: none; 
+                border-bottom: none;
+                border-radius: 20px;
+                background: rgba(255,255,255,0.05);
+                white-space: nowrap;
+                scroll-snap-align: start;
+            }
+            nav .active { 
+                background: rgba(6, 182, 212, 0.2);
+                color: var(--mw-cyan);
+                border: 1px solid rgba(6, 182, 212, 0.4);
+            }
+            
+            main { padding: 20px 20px 100px 20px; overflow-x: hidden; width: 100vw; }
+            .section-title { font-size: 2.2rem; flex-wrap: wrap; margin-bottom: 20px; }
+            .header-title { font-size: 1.8rem; letter-spacing: 3px; }
+            header { padding: 0 20px; position: relative; height: 80px; }
+            
+            .scanlines, .vignette, .interference, .bg-watermark { position: fixed; pointer-events: none; }
+            
+            .arch-diagram { flex-direction: column; padding: 20px; gap: 15px; overflow-x: hidden; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-radius: 12px; }
+            .layer-box { width: 100%; }
+            .node { font-size: 1.1rem; padding: 15px; width: 100%; word-break: break-word; border-radius: 8px; }
+            .arrow { height: 20px; width: 2px; margin: 5px auto; }
+            
+            .code-box { overflow-x: auto; font-size: 0.85rem; max-width: 100%; padding: 15px; border-radius: 8px; }
+            .endpoint-card { padding: 20px; max-width: 100%; overflow: hidden; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-radius: 12px; margin-bottom: 20px; }
+            .url { word-break: break-all; font-size: 0.85rem; margin-top: 10px; }
+            .method { font-size: 0.9rem; padding: 5px 10px; border-radius: 4px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class='hud-crosshair-x' id='hx'></div>
+    <div class='hud-crosshair-y' id='hy'></div>
+    <div class='hud-target' id='ht'></div>
+    <div class='scanner'></div>
+    <div id='bootOverlay'>
+        <div class='glitch-text'>ESTABLISHING SECURE CONNECTION...</div>
+    </div>
+
+
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="bg-watermark"></div>
+
+    <header>
+        <div class="header-title">JSOC // ARCHITECTURE INTEL</div>
+        <div class="header-status">
+            <div class="status-dot"></div>
+            LINK SECURE
+        </div>
+    </header>
+
+    <div class="container">
+        <nav>
+            <div class="nav-title">DATABANKS</div>
+            <ul>
+                <a href="/docs.html" id="nav-docs.html" class="active">1. ARCHITECTURE INTEL</a>
+                <a href="/eureka.html" id="nav-eureka.html">2. EUREKA DISCOVERY</a>
+                <a href="/config.html" id="nav-config.html">3. CONFIG SERVER</a>
+                <a href="/resilience.html" id="nav-resilience.html">4. FAULT RESILIENCE</a>
+                <a href="/database.html" id="nav-database.html">5. DATABASE TOPOLOGY</a>
+                <a href="/security.html" id="nav-security.html">6. SECURITY & CORS</a>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- SECTION 1 -->
+            <div id="arch" class="section">
+                <div class="section-title">TOPOLOGY & ROUTING</div>
+                <div class="text-block">
+                    El sistema está diseñado bajo un patrón de <strong>Microservicios</strong>. Todos los servicios
+                    independientes están registrados en un servidor <strong>Eureka (Discovery Server)</strong>.
+                    Sin embargo, por seguridad táctica, el cliente (Postman o Navegador) <strong>NUNCA</strong> debe
+                    comunicarse directamente con los microservicios individuales.
+                    <br><br>
+                    Toda la comunicación externa debe pasar a través del <strong>API Gateway (Puerto 8080)</strong>, el
+                    cual actúa como el único punto de entrada (Single Point of Entry) y enruta el tráfico internamente.
+                </div>
+
+                <div class="arch-diagram">
+                    <div class="node client">CLIENT (POSTMAN / BROWSER)</div>
+                    <div class="arrow"></div>
+                    <div class="node">API GATEWAY<span class="node-sub">PORT 8080</span></div>
+                    <div class="arrow"></div>
+                    <div class="layer-box">
+                        <div class="layer-title">INTERNAL MICROSERVICES NETWORK</div>
+                        <div class="node">USUARIO-SERVICE</div>
+                        <div class="node">PERSONAJE-SERVICE</div>
+                        <div class="node">ARMA-SERVICE</div>
+                        <div class="node">MISION-SERVICE</div>
+                        <div class="node" style="font-size:1.2rem; padding: 25px;">+ OTHERS...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2 -->
+            <div id="layers" class="section" style="animation-delay: 0.2s;">
+                <div class="section-title">LAYERED DESIGN (CAPAS)</div>
+                <div class="text-block">
+                    Internamente, cada microservicio opera mediante una arquitectura de capas estricta para asegurar la
+                    separación de responsabilidades (Separation of Concerns).
+                </div>
+
+                <div class="arch-diagram" style="margin-top: 20px;">
+                    <div class="node" style="border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);">1.
+                        CONTROLLER LAYER</div>
+                    <div class="text-block" style="text-align: center; margin:0;">Maneja las peticiones HTTP (GET,
+                        POST). Expone los Endpoints y recibe los DTOs. Pasa la orden al Service.</div>
+                    <div class="arrow" style="background:#38bdf8; box-shadow: 0 0 10px #38bdf8;"></div>
+
+                    <div class="node" style="border-color: #facc15; box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);">2.
+                        SERVICE LAYER</div>
+                    <div class="text-block" style="text-align: center; margin:0;">Contiene el "Business Logic" (Lógica
+                        de Negocio). Realiza cálculos, valida reglas del juego y se comunica con otros microservicios si
+                        es necesario.</div>
+                    <div class="arrow" style="background:#facc15; box-shadow: 0 0 10px #facc15;"></div>
+
+                    <div class="node"
+                        style="border-color: var(--mw-green); box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);">3.
+                        REPOSITORY LAYER</div>
+                    <div class="text-block" style="text-align: center; margin:0;">Interactúa directamente con la Base de
+                        Datos mediante Spring Data JPA.</div>
+                    <div class="arrow" style="background:var(--mw-green); box-shadow: 0 0 10px var(--mw-green);"></div>
+
+                    <div class="node db">DATABASE (MYSQL)</div>
+                </div>
+            </div>
+
+            <!-- SECTION 3 -->
+            <div id="comms" class="section" style="animation-delay: 0.4s;">
+                <div class="section-title">INTER-SERVICE COMMUNICATIONS</div>
+                <div class="text-block">
+                    ¿Cómo hablan los microservicios entre sí si están separados? Utilizan <strong>OpenFeign
+                        (FeignClients)</strong>.
+                    <br><br>
+                    Cuando un servicio necesita datos de otro (Por ejemplo, el <strong>Combate-Service</strong> necesita
+                    saber el daño de un arma alojada en <strong>Arma-Service</strong>), el Combate-Service realiza una
+                    llamada REST interna a través de Feign, de forma síncrona.
+                </div>
+                <div class="code-box">
+                    // Ejemplo de FeignClient en Inventario-Service pidiendo datos a Arma-Service
+                    @FeignClient(name = "arma-service", path = "/api/armas")
+                    public interface ArmaClient {
+                    @GetMapping("/{id}")
+                    ArmaDTO obtenerArmaPorId(@PathVariable("id") Long id);
+                    }
+                </div>
+            </div>
+
+            <!-- SECTION 4 -->
+            <div id="endpoints" class="section" style="animation-delay: 0.6s;">
+                <div class="section-title">CRITICAL ENDPOINTS</div>
+                <div class="text-block">
+                    A continuación, los endpoints principales de la red. <strong>REGLA DE ORO:</strong> Siempre apunta
+                    tus peticiones al puerto <code>8080</code> (API Gateway). El Gateway enrutará automáticamente basado
+                    en el prefijo (ej. <code>/api/usuarios</code> va a usuario-service).
+                </div>
+
+                <div class="endpoint-card">
+                    <div><span class="method get">GET</span> <span class="url">http://localhost:8080/api/usuarios</span>
+                    </div>
+                    <div class="desc">Obtiene la lista de todos los usuarios registrados en el sistema.</div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div><span class="method post">POST</span> <span
+                            class="url">http://localhost:8080/api/usuarios</span></div>
+                    <div class="desc">Registra un nuevo usuario en la base de datos.</div>
+                    <div class="code-box">
+                        {
+                        "nombre": "Capitan Price",
+                        "email": "price@tf141.com",
+                        "password": "secure"
+                        }
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div><span class="method get">GET</span> <span
+                            class="url">http://localhost:8080/api/personajes/{id}</span></div>
+                    <div class="desc">Obtiene las estadísticas y nivel de un personaje específico.</div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div><span class="method post">POST</span> <span class="url">http://localhost:8080/api/armas</span>
+                    </div>
+                    <div class="desc">Añade un arma al arsenal del juego (Arma-Service).</div>
+                    <div class="code-box">
+                        {
+                        "nombre": "M4A1",
+                        "tipo": "ASALTO",
+                        "danio": 45,
+                        "precio": 1500.0
+                        }
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div><span class="method post">POST</span> <span
+                            class="url">http://localhost:8080/api/combates</span></div>
+                    <div class="desc">Simula un combate entre dos personajes (Combate-Service). Este endpoint
+                        internamente usa FeignClient para consultar Personaje-Service.</div>
+                    <div class="code-box">
+                        {
+                        "personaje1Id": 1,
+                        "personaje2Id": 2
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 5 -->
+            <div id="postman" class="section" style="animation-delay: 0.8s;">
+                <div class="section-title">POSTMAN TACTICAL SETUP</div>
+                <div class="text-block">
+                    Para ejecutar pruebas eficientes en Postman durante la presentación al cliente:
+                    <ol
+                        style="margin-left: 20px; margin-top: 10px; display:flex; flex-direction:column; gap: 10px; color: #e2e8f0;">
+                        <li>Crea una <strong>Colección</strong> llamada "VideoJuego Online - Eval 3".</li>
+                        <li>Configura una <strong>Variable de Entorno (Environment)</strong>:
+                            <code>{{baseUrl}} = http://localhost:8080</code>.</li>
+                        <li>Usa la variable en todas tus rutas: <code>{{baseUrl}}/api/armas</code>. Si el Gateway cambia
+                            de puerto, solo cambias la variable.</li>
+                        <li>Recuerda enviar el <strong>Body</strong> en formato <code>raw -> JSON</code> para las
+                            peticiones POST y PUT.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="footer">
+                END OF INTEL // TASK FORCE 141 DEPLOYMENT
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playClickSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(1500, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        document.querySelectorAll('a').forEach(a => {
+            a.addEventListener('click', () => playClickSound());
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const hx = document.getElementById('hx');
+            const hy = document.getElementById('hy');
+            const ht = document.getElementById('ht');
+
+            hx.style.top = e.clientY + 'px';
+            hy.style.left = e.clientX + 'px';
+
+            ht.style.top = e.clientY + 'px';
+            ht.style.left = e.clientX + 'px';
+        });
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('bootOverlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('bootOverlay').style.display = 'none', 500);
+            }, 800);
+        };
+
+    </script>
+</body>
+
+</html>

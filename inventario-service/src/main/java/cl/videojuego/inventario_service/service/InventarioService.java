@@ -11,6 +11,7 @@ import cl.videojuego.inventario_service.repository.EstadoInventarioRepository;
 import cl.videojuego.inventario_service.repository.InventarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import cl.videojuego.inventario_service.exception.RecursoNoEncontradoException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,7 +42,7 @@ public class InventarioService {
         PersonajeDTO personaje = personajeClient.buscarPersonajePorId(dto.getIdPersonaje());
 
         EstadoInventario estado = estadoInventarioRepository.findById(dto.getIdEstadoInventario())
-                .orElseThrow(() -> new RuntimeException("Estado de inventario no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Estado de inventario no encontrado"));
 
         Inventario inventario = new Inventario();
 
@@ -57,8 +58,11 @@ public class InventarioService {
     }
 
     public List<InventarioDTO> listarPorPersonaje(Long idPersonaje) {
-        return inventarioRepository.findByIdPersonaje(idPersonaje)
-                .stream()
+        List<Inventario> inventarios = inventarioRepository.findByIdPersonaje(idPersonaje);
+        if (inventarios.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron inventarios para el personaje con ID: " + idPersonaje);
+        }
+        return inventarios.stream()
                 .map(inventario -> {
                     PersonajeDTO personaje = personajeClient.buscarPersonajePorId(inventario.getIdPersonaje());
                     return InventarioMapper.toDTO(inventario, personaje);
@@ -67,8 +71,11 @@ public class InventarioService {
     }
 
     public List<InventarioDTO> listarPorEstado(Long idEstadoInventario) {
-        return inventarioRepository.findByEstadoInventario_IdEstadoInventario(idEstadoInventario)
-                .stream()
+        List<Inventario> inventarios = inventarioRepository.findByEstadoInventario_IdEstadoInventario(idEstadoInventario);
+        if (inventarios.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron inventarios para el estado con ID: " + idEstadoInventario);
+        }
+        return inventarios.stream()
                 .map(inventario -> {
                     PersonajeDTO personaje = personajeClient.buscarPersonajePorId(inventario.getIdPersonaje());
                     return InventarioMapper.toDTO(inventario, personaje);
@@ -79,7 +86,7 @@ public class InventarioService {
 
         Inventario inventario = inventarioRepository.findById(idInventario)
                 .orElseThrow(() ->
-                        new RuntimeException("Inventario no encontrado")
+                        new RecursoNoEncontradoException("Inventario no encontrado")
                 );
 
         PersonajeDTO personaje =

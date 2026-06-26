@@ -14,6 +14,7 @@ import cl.videojuego.inventario_service.repository.TipoItemRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import cl.videojuego.inventario_service.exception.RecursoNoEncontradoException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,10 +40,10 @@ public class ItemInventarioService {
     public ItemInventarioDTO registrar(ItemInventarioRegistroDTO dto) {
 
         Inventario inventario = inventarioRepository.findById(dto.getIdInventario())
-                .orElseThrow(() -> new RuntimeException("Inventario no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Inventario no encontrado"));
 
         TipoItem tipoItem = tipoItemRepository.findById(dto.getIdTipoItem())
-                .orElseThrow(() -> new RuntimeException("Tipo de item no encontrado"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Tipo de item no encontrado"));
 
         // Obtener el nombre real del ítem según su tipo
         String nombreItemObtenido;
@@ -85,22 +86,31 @@ public class ItemInventarioService {
     }
 
     public List<ItemInventarioDTO> listarPorInventario(Long idInventario) {
-        return itemInventarioRepository.findByInventario_IdInventario(idInventario)
-                .stream()
+        List<ItemInventario> items = itemInventarioRepository.findByInventario_IdInventario(idInventario);
+        if (items.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron items para el inventario con ID: " + idInventario);
+        }
+        return items.stream()
                 .map(ItemInventarioMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     public List<ItemInventarioDTO> listarPorReferencia(Long idReferencia) {
-        return itemInventarioRepository.findByIdReferenciaItem(idReferencia)
-                .stream()
+        List<ItemInventario> items = itemInventarioRepository.findByIdReferenciaItem(idReferencia);
+        if (items.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron items para la referencia con ID: " + idReferencia);
+        }
+        return items.stream()
                 .map(ItemInventarioMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     public List<ItemInventarioDTO> listarEquipados(Boolean equipado) {
-        return itemInventarioRepository.findByEquipado(equipado)
-                .stream()
+        List<ItemInventario> items = itemInventarioRepository.findByEquipado(equipado);
+        if (items.isEmpty()) {
+            throw new RecursoNoEncontradoException("No se encontraron items con estado equipado: " + equipado);
+        }
+        return items.stream()
                 .map(ItemInventarioMapper::toDTO)
                 .collect(Collectors.toList());
     }
