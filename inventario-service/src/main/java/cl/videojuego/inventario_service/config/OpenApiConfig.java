@@ -18,10 +18,11 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                    .title("API de Microservicio")
+                    .title("API de Inventario Service")
                     .version("1.0.0")
+                    .description("Microservicio para la gestión de inventarios y sus ítems en el Videojuego Online")
                     .contact(new Contact()
-                        .name("Juan Varas, Elizabeth Reyes y Scarlett Riquelme")))
+                        .name("Juan Varas")))
                 .servers(List.of(gatewayServer));
     }
 }
